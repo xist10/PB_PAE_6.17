@@ -1,0 +1,13 @@
+Nicht auf Vollständigkeit geprüft
+v9  Umstellung auf PAE 6.17; Umstellung auf PAE .dll (Fehler)
+v11 Umstellung auf PB Mod .dll
+v12 Namensänderung auf PB_PAE_6.17
+v13 Löschen der meisten Wundervideos
+v15 Änderung der expliziten Verweise auf Mods/PieAncientEuropeVI/
+v17 Verschiedenen Pythonänderungen. Einige Additionion für die BeobachterZiv (Spionage); Angleichen der WB Screens (für Szenariostart ?!)
+v18 Umwandlung von PAE_List
+v19 Einbau des ModUpdaters aus dem PB Mod - unfertig
+v25 Verschiedene Pythonkorrekturen - Umwandlung der Kreise bei Handelskarren
+--------
+v26 Einbau der Pythonänderungen von PAE_PB_7 - Zurück der Listen, 2 kleine Fehlerbehandlungen; Belobigung
+v28 Entfernen von Debugpythondateien
