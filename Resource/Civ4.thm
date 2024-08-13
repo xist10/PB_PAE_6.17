@@ -1,0 +1,5 @@
+// Set the resource
+resource_path "Mods/PB_PAE_6.17/Resource";
+
+// Setup common properties
+include "Mods/PB_PAE_6.17/Resource/Themes/Civ4/Civ4Theme.thm";

@@ -1,0 +1,8 @@
+{
+    "update_urls": ["http://kirk.zulan.net/pb/ModUpdates/[MODNAME]" ],
+    "visit_url": "https://www.civforum.de/showthread.php?115671-PB-94-Schaffen-wir-PAE",
+    "current_version": "__vanilla__",
+    "check_at_startup": 0,
+    "startup_delay": -1
+}
+
