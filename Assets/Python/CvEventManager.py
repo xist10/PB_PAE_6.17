@@ -37,11 +37,13 @@ from CvPythonExtensions import (CyGlobalContext, CyTranslator, plotXY,
 								CyGame, CyEngine, CyAudioGame, MissionTypes, FontSymbols, PlotTypes,
 								InterfaceDirtyBits, InterfaceMessageTypes, GameOptionTypes, UnitTypes,
 								EventContextTypes, getChtLvl, plotDirection, MissionAITypes, RouteTypes,
-								PlayerTypes, CyCamera, NotifyCode, PlayerOptionTypes, ControlTypes)
+								PlayerTypes, CyCamera, NotifyCode, PlayerOptionTypes, ControlTypes, NiTextOut)
 
 import CvUtil
 if not CvUtil.isPitbossHost():
     from CvPythonExtensions import CyGInterfaceScreen
+if CvUtil.isPitbossHost():
+	from CvPythonExtensions import CyPitboss
 
 import CvScreensInterface
 import CvDebugTools
@@ -2229,18 +2231,19 @@ class CvEventManager:
 				return ""
 
 		def onLoadGame(self, argsList):
-
+				
 				# +++++ PAE Debug: disband/delete things to check CtD reasons)
 				#self.onGameStartAndKickSomeAss()
 
 				# force deactivation, otherwise CtD when choosing a religion with forbidden tech require
 				gc.getGame().setOption(gc.getInfoTypeForString("GAMEOPTION_PICK_RELIGION"), False)
-
+				
 				# PAE - River tiles
 				self.bRiverTiles_WaitOnMainInterface = True
-
+				
 				# PAE_Lists needs to be initialised
 				L.init()
+				
 				# PAE_Trade needs to be initialised
 				PAE_Trade.init()
 
@@ -2251,10 +2254,8 @@ class CvEventManager:
 				sScenarioName = CvUtil.getScriptData(CyMap().plot(0, 0), ["S", "t"])
 				if sScenarioName == "SchmelzEuro" or sScenarioName == "SchmelzWelt":
 						Schmelz.onLoadGame(sScenarioName)
-
 				# --------- BTS --------
 				CvAdvisorUtils.resetNoLiberateCities()
-
 				# Start PB Mod Copy
 				global iPlayerOptionCheck
 				# Attention, for iPlayerOptionCheck = 1 you will check aggainst
@@ -2265,7 +2266,6 @@ class CvEventManager:
 					del self.__dict__["__ee_whip_handle"]
 
 				# End PB Mod Copy
-
 				return 0
 
 		# +++++ PAE Debug: disband/delete things (for different reasons: CtD or OOS)
@@ -2553,6 +2553,7 @@ class CvEventManager:
 		# this is a LOCAL function !!!
 		def onBeginGameTurn(self, argsList):
 				'Called at the beginning of the end of each turn'
+				
 				iGameTurn = argsList[0]
 				## AI AutoPlay ##
 				if CyGame().getAIAutoPlay() == 0:
@@ -2561,9 +2562,12 @@ class CvEventManager:
 				# CvTopCivs.CvTopCivs().turnChecker(iGameTurn)
 
 				## PB Mod ##
-				if PBMod:
-						genEndTurnSave(iGameTurn, self.latestPlayerEndsTurn)
-						self.bGameTurnProcessing = True
+				try:
+					if PBMod:
+							genEndTurnSave(iGameTurn, self.latestPlayerEndsTurn)
+							self.bGameTurnProcessing = True
+				except:
+					NiTextOut("Problem genEndTurnSave")
 				## PB Mod ##
 
 				# Historische Texte ---------
@@ -2572,6 +2576,7 @@ class CvEventManager:
 		# global
 		def onEndGameTurn(self, argsList):
 				'Called at the end of the end of each turn'
+
 				iGameTurn = argsList[0]
 
 				# PAE Debug Mark 1
@@ -2657,6 +2662,7 @@ class CvEventManager:
 		# global
 		def onBeginPlayerTurn(self, argsList):
 				'Called at the beginning of a players turn'
+				
 				iGameTurn, iPlayer = argsList
 				pPlayer = gc.getPlayer(iPlayer)
 				pTeam = gc.getTeam(pPlayer.getTeam())
@@ -2755,7 +2761,7 @@ class CvEventManager:
 				# nur wenn nicht schon Anarchie herrscht
 				if pPlayer.getAnarchyTurns() <= 0:
 						PAE_Turn_Features.doRevoltAnarchy(iPlayer)
-
+				
 # +++++ HI-Hegemon TECH Vasallenfeature (Chance 33% every 5th round) / Vassal Tech
 				if iGameTurn % 5 == 0:
 						if pPlayer.isHuman():
@@ -2822,6 +2828,7 @@ class CvEventManager:
 		# global
 		def onEndPlayerTurn(self, argsList):
 				'Called at the end of a players turn'
+				
 				iGameTurn, iPlayer = argsList
 				pPlayer = gc.getPlayer(iPlayer)
 
@@ -2917,64 +2924,9 @@ class CvEventManager:
 										PAE_City.doMessageCityGrowing(pyCity.GetCy())
 
 
-				# PAE 6.16 Ranged Combat / Range Attack / Fernangriff
-
-				#if not pPlayer.isHuman():
-				#		iRange = 1
-				#		pTeam = gc.getTeam(pPlayer.getTeam())
-				#		(loopUnit, pIter) = pPlayer.firstUnit(False)
-				#		while loopUnit:
-				#				if loopUnit.isRanged() and loopUnit.canAttack():
-				#						pAttackPlot1 = []
-				#						pAttackPlot2 = []
-				#						iDamage = 100
-				#						bDoRangeAttack = False
-				#						# Plot holen
-				#						plot = loopUnit.plot()
-				#						# wenn Unit in der Stadt, immer verteidigen
-				#						# wenn Unit alleine auf dem Feld, nicht angreifen sondern eher wegbewegen (AI choice)
-				#						if plot.isCity() or plot.getNumUnits() > 1:
-				#								bDoRangeAttack = True
-				#						# Plots rundum checken
-				#						if bDoRangeAttack:
-				#								iX = loopUnit.getX()
-				#								iY = loopUnit.getY()
-				#								for x in range(-iRange, iRange+1):
-				#										for y in range(-iRange, iRange+1):
-				#												loopPlot = plotXY(iX, iY, x, y)
-				#												if loopPlot is not None and not loopPlot.isNone():
-				#														iNumUnits = loopPlot.getNumUnits()
-				#														if iNumUnits > 0:
-				#																for i in range(iNumUnits):
-				#																		iOwner = loopPlot.getUnit(i).getOwner()
-				#																		if iOwner != iPlayer:
-				#																				if pTeam.isAtWar(gc.getPlayer(iOwner).getTeam()):
-				#																						iUnitDamage = loopPlot.getUnit(i).getDamage()
-				#																						if iUnitDamage < iDamage:
-				#																								iDamage = iUnitDamage
-				#																								if iDamage == 0:
-				#																										pAttackPlot1.append(loopPlot)
-				#																								else:
-				#																										pAttackPlot2.append(loopPlot)
-				#																								break
-				#
-				#						pAttackPlot = []
-				#						if len(pAttackPlot1):
-				#								iRand = CvUtil.myRandom(len(pAttackPlot1), "onEndPlayerTurn (AI): Choose primary Plot for Ranged Combat")
-				#								pAttackPlot.append(pAttackPlot1[iRand])
-				#						elif len(pAttackPlot2):
-				#								iRand = CvUtil.myRandom(len(pAttackPlot2), "onEndPlayerTurn (AI): Choose secondary Plot for Ranged Combat")
-				#								pAttackPlot.append(pAttackPlot2[iRand])
-				#
-				#						if len(pAttackPlot):
-				#								loopUnit.rangeStrike(pAttackPlot[0].getX(), pAttackPlot[0].getY())
-				#								loopUnit.finishMoves()
-				#
-				#				(loopUnit, pIter) = pPlayer.nextUnit(pIter, False)
+				# PAE 6.16 Ranged Combat / Range Attack / Fernangriff war auskommentiert, wurde gelöscht
 
 
-				# PAE Debug Mark 3
-				#"""
 
 				# ++ Standard BTS ++
 				if gc.getGame().getElapsedGameTurns() == 1:
@@ -3010,7 +2962,7 @@ class CvEventManager:
 										CyInterface().addMessage(self.iPAE_ShowMessagePlayerHumanID, True, 3, CyTranslator().getText("TXT_KEY_MESSAGE_PAE_CIV_TURN", (thisPlayer, "")), None, 2, None, ColorTypes(14), 0, 0, False, False)
 								else:
 										CyInterface().addMessage(self.iPAE_ShowMessagePlayerHumanID, True, 3, CyTranslator().getText("TXT_KEY_MESSAGE_PAE_CIV_TURN2", ("",)), None, 2, None, ColorTypes(14), 0, 0, False, False)
-
+				
 		def onEndTurnReady(self, argsList):
 				# iGameTurn = argsList[0]
 				return
@@ -5660,39 +5612,54 @@ def genEndTurnSave(iGameTurn, iPlayerTurnActive):
 	if not CyGame().isPitbossHost():
 		return
 
-	altroot = gc.getAltrootDir()
-	filename = "%s\\Saves\\multi\\auto\\EndSave_T%i.CivBeyondSwordSave" % (altroot, iGameTurn,)
-	PB = CyPitboss()
-	PB.consoleOut("Save '" + filename + "' ...")
+	try:
+		altroot = gc.getAltrootDir()
+		filename = "%s\\Saves\\multi\\auto\\EndSave_T%i.CivBeyondSwordSave" % (altroot, iGameTurn,)
+		try:
+			PB = CyPitboss()
+			PB.consoleOut("Save '" + filename + "' ...")
+		except:
+			NiTextOut("PB = CyPitboss()")
+	except:
+		NiTextOut("Problem Block1")
+	try:
+		# Backup current state
+		td = PB.getTurnTimeLeft()  # Simply 0!? No, timer of next round will be returned instead of 0
+		iP = CyGame().getPausePlayer()  # -1
+		#PB.consoleOut("Timer is %d " % (td,))
 
-	# Backup current state
-	td = PB.getTurnTimeLeft()  # Simply 0!? No, timer of next round will be returned instead of 0
-	iP = CyGame().getPausePlayer()  # -1
-	#PB.consoleOut("Timer is %d " % (td,))
+		# Minimal bound of timer in save
+		tdMax = CyGame().getPitbossTurnTime() * 3600 * 4 - 1
+		# PB.consoleOut("Compare timers: " + str(td) + ", " + str(tdMax))
+		if td < 60 * 4 or td == tdMax:
+			timer_change = 60 * 4 - td  # One minute
+		else:
+			timer_change = 0
+	except:
+		NiTextOut("Problem Block 2")
 
-	# Minimal bound of timer in save
-	tdMax = CyGame().getPitbossTurnTime() * 3600 * 4 - 1
-	# PB.consoleOut("Compare timers: " + str(td) + ", " + str(tdMax))
-	if td < 60 * 4 or td == tdMax:
-		timer_change = 60 * 4 - td  # One minute
-	else:
-		timer_change = 0
-
-	# Avoid turn change on reload
-	gc.getPlayer(iPlayerTurnActive).setTurnActive(True)
-	CyGame().setPausePlayer(iPlayerTurnActive)
-	if PB.getTurnTimer():
-		CyGame().incrementTurnTimer(timer_change)
-
+	try:
+		# Avoid turn change on reload
+		gc.getPlayer(iPlayerTurnActive).setTurnActive(True)
+		CyGame().setPausePlayer(iPlayerTurnActive)
+		if PB.getTurnTimer():
+			CyGame().incrementTurnTimer(timer_change)
+	except:
+		NiTextOut("Problem Block3")
+	try:
 	# Save paused game
-	PB.save(filename)
+		PB.save(filename)
+	except:
+		NiTextOut("Problem Savevorgang")
 
-	# Restore current state
-	if PB.getTurnTimer():
-		CyGame().incrementTurnTimer(-timer_change)
+	try:
+		# Restore current state
+		if PB.getTurnTimer():
+			CyGame().incrementTurnTimer(-timer_change)
 
-	CyGame().setPausePlayer(iP)
-	gc.getPlayer(iPlayerTurnActive).setTurnActive(False)
-
+		CyGame().setPausePlayer(iP)
+		gc.getPlayer(iPlayerTurnActive).setTurnActive(False)
+	except:
+		NiTextOut("Problem Block4")
 	PB.consoleOut("Done")
 ## PB Mod - Functions End ##
