@@ -52,7 +52,7 @@ import Popup as PyPopup
 from CvPythonExtensions import (CyGlobalContext, CyGame, CyInterface, ButtonPopupTypes,
 								CyMap, FeatTypes, TaskTypes, CyPopupInfo, CyTranslator,
 								CyMessageControl, AdvancedStartActionTypes, UnitAITypes,
-								DirectionTypes)
+								DirectionTypes, NiTextOut)
 
 from CvScreenEnums import (SPACE_SHIP_SCREEN, MAIN_INTERFACE,
 							DOMESTIC_ADVISOR, RELIGION_SCREEN, CORPORATION_SCREEN, CIVICS_SCREEN,

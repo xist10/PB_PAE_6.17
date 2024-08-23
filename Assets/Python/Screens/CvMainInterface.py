@@ -18,7 +18,7 @@ from CvPythonExtensions import (CyGlobalContext, CyArtFileMgr, CyTranslator,
 								InterfaceDirtyBits, NotifyCode,
 								CyGlobeLayerManager, YieldTypes,
 								EndTurnButtonStates, getClockText,
-								CultureLevelTypes, CityTabTypes)
+								CultureLevelTypes, CityTabTypes, NiTextOut)
 import CvUtil
 if not CvUtil.isPitbossHost():
     from CvPythonExtensions import CyGInterfaceScreen
@@ -249,7 +249,7 @@ class CvMainInterface:
 		# BUG - field of view slider - end
 
 		def interfaceScreen(self):
-
+				
 				# Global variables being set here
 				global g_NumEmphasizeInfos
 				global g_NumCityTabTypes
@@ -265,7 +265,6 @@ class CvMainInterface:
 				global MAX_DISPLAYABLE_TRADE_ROUTES
 				global MAX_BONUS_ROWS
 				global MAX_CITIZEN_BUTTONS
-
 				# SPECIALIST STACKER        05/02/07      JOHNY
 				global g_iSuperSpecialistCount
 				global g_iAngryCitizensCount
@@ -281,23 +280,20 @@ class CvMainInterface:
 				global MAX_ANGRY_CITIZEN_BUTTONS
 				global ANGRY_CITIZEN_STACK_WIDTH
 				global g_bDynamicAngryCitizensSpacing
-
 				# SPECIALIST STACKER        END
 
+				if CyGame().isPitbossHost():
+						return
 				# BUG - field of view
 				# This is the main interface screen, create it as such
 				screen = CyGInterfaceScreen("MainInterface", CvScreenEnums.MAIN_INTERFACE)
 				self.initState(screen)
 				screen.setForcedRedraw(True)
 				screen.setDimensions(0, 0, self.xResolution, self.yResolution)
-
 				# to avoid changing all the code below
 				xResolution = self.xResolution
 				yResolution = self.yResolution
 				# BUG - field of view end
-
-				if CyGame().isPitbossHost():
-						return
 
 				# This is the main interface screen, create it as such
 				screen = CyGInterfaceScreen("MainInterface", CvScreenEnums.MAIN_INTERFACE)
