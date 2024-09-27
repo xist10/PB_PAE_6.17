@@ -2475,13 +2475,13 @@ class CvMainInterface:
 																										"INTERFACE_TRADE_COLLECT_SPY").getPath(), 0, WidgetTypes.WIDGET_GENERAL, 739, 3, True)
 																								screen.show("BottomButtonContainer")
 																								iCount += 1
-																		''' Auskommentiert nach Kommentar von Pie - Bugs, ABstürze, Probleme - # 4416
-																		if bCity:
+																		
+																		if bCity and pPlot.getOwner() == iUnitOwner:
 																				screen.appendMultiListButton("BottomButtonContainer", ArtFileMgr.getInterfaceArtInfo(
 																						"INTERFACE_TRADE_BUY").getPath(), 0, WidgetTypes.WIDGET_GENERAL, 739, 1, True)
 																				screen.show("BottomButtonContainer")
 																				iCount += 1
-																		'''
+																		
 																elif bCity:
 																		iPrice = PAE_Trade.calculateBonusSellingPrice(pUnit, pPlot.getPlotCity(), 0)
 																		screen.appendMultiListButton("BottomButtonContainer", ArtFileMgr.getInterfaceArtInfo(
