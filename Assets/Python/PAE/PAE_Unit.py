@@ -729,6 +729,15 @@ def doStackRebellion(iPlayer, PlotArrayRebellion, iStackLimit2):
 def doUpgradeVeteran(pUnit, iNewUnit, bChangeCombatPromo):
 		if iNewUnit == -1:
 				return
+		
+		# RobA: Praetorianer Check (im 2 Jhd. n. Chr. wurden Praetorianer abgeschafft) eingefügt
+		if iNewUnit == gc.getInfoTypeForString("UNIT_PRAETORIAN"):
+				iOwner = pUnit.getOwner()
+				pOwner = gc.getPlayer(iOwner)
+				pTeam = gc.getTeam(pOwner.getTeam())
+				if pTeam.isHasTech(gc.getInfoTypeForString("TECH_GRENZHEER")):
+						return
+		
 		if not iNewUnit in range(gc.getNumUnitInfos()):
 				# ***TEST***
 				CyInterface().addMessage(gc.getGame().getActivePlayer(), True, 10, CyTranslator().getText("TXT_KEY_MESSAGE_TEST",

@@ -1689,886 +1689,887 @@ class CvGameUtils:
 
 		# global
 		def AI_unitUpdate(self, argsList):
-				pUnit = argsList[0]
-				iOwner = pUnit.getOwner()
-				pOwner = gc.getPlayer(iOwner)
-				pTeam = gc.getTeam(pOwner.getTeam())
-				# eCiv = gc.getCivilizationInfo(pOwner.getCivilizationType())
-				iBarbarianPlayer = gc.getBARBARIAN_PLAYER()
-				pPlot = pUnit.plot()
+				CvUtil.myRandom(10, "Start AI_unitUpdate")
+				try:
+					pUnit = argsList[0]
+					iOwner = pUnit.getOwner()
+					pOwner = gc.getPlayer(iOwner)
+					pTeam = gc.getTeam(pOwner.getTeam())
+					# eCiv = gc.getCivilizationInfo(pOwner.getCivilizationType())
+					iBarbarianPlayer = gc.getBARBARIAN_PLAYER()
+					pPlot = pUnit.plot()
 
-				if not pOwner.isHuman():
-						iUnitType = pUnit.getUnitType()
-						lCities = PyPlayer(iOwner).getCityList()
+					if not pOwner.isHuman():
+							iUnitType = pUnit.getUnitType()
+							lCities = PyPlayer(iOwner).getCityList()
 
-						# PAE AI Unit Instances (better turn time)
-						if self.PAE_AI_ID != iOwner:
-								#self.PAE_AI_ID = iOwner
-								self.PAE_AI_Cities_Slaves = []
-								self.PAE_AI_Cities_Slavemarket = []
-
-
-						# Hunter (771): Lager oder Beobachtungsturm
-						if iUnitType == gc.getInfoTypeForString("UNIT_HUNTER"):
-								# Lager / Camp
-								#if pTeam.isHasTech(gc.getInfoTypeForString("TECH_HUNTING")):
-								#		if pPlot.getOwner() == pUnit.getOwner() and pPlot.getImprovementType() == -1:
-								#				if pPlot.isCultureRangeCity(iOwner, 2) and pPlot.getFeatureType() in L.LForests:
-								#						pPlot.setImprovementType(gc.getInfoTypeForString("IMPROVEMENT_CAMP"))
-								#						pUnit.finishMoves()
-								#						return True
-								# Beobachtungsturm / Spähturm / Look-out
-								if pTeam.isHasTech(gc.getInfoTypeForString("TECH_HOLZWEHRANLAGEN")):
-										if pPlot.isHills() and pPlot.getImprovementType() == -1 and pPlot.getBonusType(-1) == -1 and not pPlot.isCity():
-												if pPlot.getOwner() == -1 or pPlot.getOwner() == pUnit.getOwner() and not pPlot.isCultureRangeCity(iOwner, 2):
-														# Check, ob im Umkreis Türme sind
-														bTurm = False
-														eTurm = gc.getInfoTypeForString("IMPROVEMENT_TURM")
-														iRange = 3
-														iX = pPlot.getX()
-														iY = pPlot.getY()
-														for i in range(-iRange, iRange+1):
-																for j in range(-iRange, iRange+1):
-																		loopPlot = plotXY(iX, iY, i, j)
-																		if loopPlot is not None and not loopPlot.isNone():
-																				if loopPlot.getImprovementType() == eTurm:
-																						bTurm = True
-																						break
-																if bTurm: break
-
-														if not bTurm:
-																pPlot.setImprovementType(eTurm)
-																pUnit.finishMoves()
-																return True
-
-						# Worker (771): Schürflager
-						#if iUnitType == gc.getInfoTypeForString("UNIT_WORKER"):
-						#		if not pTeam.isHasTech(gc.getInfoTypeForString("TECH_MINING")):
-						#				if pTeam.isHasTech(gc.getInfoTypeForString("TECH_METAL_SMELTING")):
-						#						if pPlot.getOwner() == pUnit.getOwner():
-						#								iLager = gc.getInfoTypeForString("IMPROVEMENT_ORE_CAMP")
-						#								eBonus = pPlot.getBonusType(iOwner)
-						#								if eBonus != -1 and gc.getImprovementInfo(iLager).isImprovementBonusMakesValid(eBonus): #and pPlot.getImprovementType() != iLager
-						#										pPlot.setImprovementType(iLager)
-						#										pUnit.finishMoves()
-						#										return True
+							# PAE AI Unit Instances (better turn time)
+							if self.PAE_AI_ID != iOwner:
+									#self.PAE_AI_ID = iOwner
+									self.PAE_AI_Cities_Slaves = []
+									self.PAE_AI_Cities_Slavemarket = []
 
 
-						# Barbs -------------------------
-						if iUnitType == gc.getInfoTypeForString("UNIT_TREIBGUT"):
-								# CyInterface().addMessage(gc.getGame().getActivePlayer(), True, 15, CyTranslator().getText("TXT_KEY_MESSAGE_TEST", ("TreibgutAI",)), None, 2, None, ColorTypes(11), pUnit.getX(), pUnit.getY(), False, False)
-								PAE_Unit.move2nextPlot(pUnit, True)
-								pUnit.getGroup().pushMission(MissionTypes.MISSION_SKIP, 0, 0, 0, True, False, MissionAITypes.NO_MISSIONAI, pUnit.plot(), pUnit)
-								return True
-						elif iUnitType == gc.getInfoTypeForString("UNIT_STRANDGUT"):
-								# CyInterface().addMessage(gc.getGame().getActivePlayer(), True, 15, CyTranslator().getText("TXT_KEY_MESSAGE_TEST", ("StrandgutAI",)), None, 2, None, ColorTypes(11), pUnit.getX(), pUnit.getY(), False, False)
-								if CvUtil.myRandom(20, "entferne_Strandgut") < 2:
-										pUnit.kill(True, -1)
-								else:
-										pUnit.getGroup().pushMission(MissionTypes.MISSION_SKIP, 0, 0, 0, True, False, MissionAITypes.NO_MISSIONAI, pUnit.plot(), pUnit)
-								return True
-						elif iUnitType == gc.getInfoTypeForString("UNIT_SEEVOLK"):  # and pUnit.plot().isCity():
-								if pUnit.canUnloadAll() and pUnit.plot().getOwner() != -1 or not pUnit.hasCargo():
-										pUnit.doCommand(CommandTypes.COMMAND_UNLOAD_ALL, 0, 0)
-										pUnit.kill(True, -1)
+							# Hunter (771): Lager oder Beobachtungsturm
+							if iUnitType == gc.getInfoTypeForString("UNIT_HUNTER"):
+									# Lager / Camp
+									#if pTeam.isHasTech(gc.getInfoTypeForString("TECH_HUNTING")):
+									#		if pPlot.getOwner() == pUnit.getOwner() and pPlot.getImprovementType() == -1:
+									#				if pPlot.isCultureRangeCity(iOwner, 2) and pPlot.getFeatureType() in L.LForests:
+									#						pPlot.setImprovementType(gc.getInfoTypeForString("IMPROVEMENT_CAMP"))
+									#						pUnit.finishMoves()
+									#						return True
+									# Beobachtungsturm / Spähturm / Look-out
+									if pTeam.isHasTech(gc.getInfoTypeForString("TECH_HOLZWEHRANLAGEN")):
+											if pPlot.isHills() and pPlot.getImprovementType() == -1 and pPlot.getBonusType(-1) == -1 and not pPlot.isCity():
+													if pPlot.getOwner() == -1 or pPlot.getOwner() == pUnit.getOwner() and not pPlot.isCultureRangeCity(iOwner, 2):
+															# Check, ob im Umkreis Türme sind
+															bTurm = False
+															eTurm = gc.getInfoTypeForString("IMPROVEMENT_TURM")
+															iRange = 3
+															iX = pPlot.getX()
+															iY = pPlot.getY()
+															for i in range(-iRange, iRange+1):
+																	for j in range(-iRange, iRange+1):
+																			loopPlot = plotXY(iX, iY, i, j)
+																			if loopPlot is not None and not loopPlot.isNone():
+																					if loopPlot.getImprovementType() == eTurm:
+																							bTurm = True
+																							break
+																	if bTurm: break
 
-						if iOwner == iBarbarianPlayer:
-								# Barbs vom FortDefence
-								iPromo = gc.getInfoTypeForString("PROMOTION_FORM_FORTRESS")  # Moves -1
-								iPromo2 = gc.getInfoTypeForString("PROMOTION_FORM_FORTRESS2")  # Moves -2
-								if pUnit.getUnitAIType() == UnitAITypes.UNITAI_CITY_DEFENSE or pUnit.isHasPromotion(iPromo) or pUnit.isHasPromotion(iPromo2):
-										if pUnit.plot().isCity() or pUnit.plot().getImprovementType() in L.LImprFortShort:
-												pUnit.getGroup().pushMission(MissionTypes.MISSION_FORTIFY, 0, 0, 0, True, False, MissionAITypes.NO_MISSIONAI, pUnit.plot(), pUnit)
+															if not bTurm:
+																	pPlot.setImprovementType(eTurm)
+																	pUnit.finishMoves()
+																	return True
+
+							# Worker (771): Schürflager
+							#if iUnitType == gc.getInfoTypeForString("UNIT_WORKER"):
+							#		if not pTeam.isHasTech(gc.getInfoTypeForString("TECH_MINING")):
+							#				if pTeam.isHasTech(gc.getInfoTypeForString("TECH_METAL_SMELTING")):
+							#						if pPlot.getOwner() == pUnit.getOwner():
+							#								iLager = gc.getInfoTypeForString("IMPROVEMENT_ORE_CAMP")
+							#								eBonus = pPlot.getBonusType(iOwner)
+							#								if eBonus != -1 and gc.getImprovementInfo(iLager).isImprovementBonusMakesValid(eBonus): #and pPlot.getImprovementType() != iLager
+							#										pPlot.setImprovementType(iLager)
+							#										pUnit.finishMoves()
+							#										return True
+
+
+							# Barbs -------------------------
+							if iUnitType == gc.getInfoTypeForString("UNIT_TREIBGUT"):
+									# CyInterface().addMessage(gc.getGame().getActivePlayer(), True, 15, CyTranslator().getText("TXT_KEY_MESSAGE_TEST", ("TreibgutAI",)), None, 2, None, ColorTypes(11), pUnit.getX(), pUnit.getY(), False, False)
+									PAE_Unit.move2nextPlot(pUnit, True)
+									pUnit.getGroup().pushMission(MissionTypes.MISSION_SKIP, 0, 0, 0, True, False, MissionAITypes.NO_MISSIONAI, pUnit.plot(), pUnit)
+									return True
+							elif iUnitType == gc.getInfoTypeForString("UNIT_STRANDGUT"):
+									# CyInterface().addMessage(gc.getGame().getActivePlayer(), True, 15, CyTranslator().getText("TXT_KEY_MESSAGE_TEST", ("StrandgutAI",)), None, 2, None, ColorTypes(11), pUnit.getX(), pUnit.getY(), False, False)
+									if CvUtil.myRandom(20, "entferne_Strandgut") < 2:
+											pUnit.kill(True, -1)
+									else:
+											pUnit.getGroup().pushMission(MissionTypes.MISSION_SKIP, 0, 0, 0, True, False, MissionAITypes.NO_MISSIONAI, pUnit.plot(), pUnit)
+									return True
+							elif iUnitType == gc.getInfoTypeForString("UNIT_SEEVOLK"):  # and pUnit.plot().isCity():
+									if pUnit.canUnloadAll() and pUnit.plot().getOwner() != -1 or not pUnit.hasCargo():
+											pUnit.doCommand(CommandTypes.COMMAND_UNLOAD_ALL, 0, 0)
+											pUnit.kill(True, -1)
+
+							if iOwner == iBarbarianPlayer:
+									# Barbs vom FortDefence
+									iPromo = gc.getInfoTypeForString("PROMOTION_FORM_FORTRESS")  # Moves -1
+									iPromo2 = gc.getInfoTypeForString("PROMOTION_FORM_FORTRESS2")  # Moves -2
+									if pUnit.getUnitAIType() == UnitAITypes.UNITAI_CITY_DEFENSE or pUnit.isHasPromotion(iPromo) or pUnit.isHasPromotion(iPromo2):
+											if pUnit.plot().isCity() or pUnit.plot().getImprovementType() in L.LImprFortShort:
+													pUnit.getGroup().pushMission(MissionTypes.MISSION_FORTIFY, 0, 0, 0, True, False, MissionAITypes.NO_MISSIONAI, pUnit.plot(), pUnit)
+													return True
+											else:
+													pUnit.setUnitAIType(UnitAITypes.UNITAI_ATTACK)
+													pUnit.setHasPromotion(iPromo, False)
+													pUnit.setHasPromotion(iPromo2, False)
+
+									# Barbarische Emigranten stehen nur rum und benoetigen unnoetig Rechenzeit
+									elif pUnit.getUnitType() == gc.getInfoTypeForString("UNIT_EMIGRANT"):
+											pUnit.kill(True, -1)
+											return True
+									# Barbarische befreite Sklaven stehen nur rum und benoetigen unnoetig Rechenzeit
+									elif pUnit.getUnitType() == gc.getInfoTypeForString("UNIT_FREED_SLAVE"):
+											pUnit.kill(True, -1)
+											return True
+									# Barbarische Haendler sind unnoetig
+									elif pUnit.getUnitType() in L.LTradeUnits:
+											pUnit.kill(True, -1)
+											return True
+									# Barbarische Tiere sollen keine Stadt betreten / Barbarian animals will be disbanded when moving into a city
+									elif pUnit.getUnitAIType() == UnitAITypes.UNITAI_ANIMAL:
+											if pPlot.isCity() or pPlot.getFeatureType() == gc.getInfoTypeForString("FEATURE_DARK_ICE"):
+													pUnit.kill(True, -1)
+													return True
+
+									# ab hier mit BarbUnits raus aus der kompletten Funktion AI_unitUpdate
+									return False
+							# -------------------------------
+
+							# Inquisitor
+							if iUnitType == gc.getInfoTypeForString("UNIT_INQUISITOR"):
+									#CyInterface().addMessage(gc.getGame().getActivePlayer(), True, 10, CyTranslator().getText("TXT_KEY_MESSAGE_TEST",("AI Inquisitor",1)), None, 2, None, ColorTypes(10), 0, 0, False, False)
+									if self.doInquisitorCore_AI(pUnit):
+											return True
+
+							# Freed slaves
+							elif iUnitType == gc.getInfoTypeForString("UNIT_FREED_SLAVE"):
+									#CyInterface().addMessage(gc.getGame().getActivePlayer(), True, 10, CyTranslator().getText("TXT_KEY_MESSAGE_TEST",("AI Freed Slave",1)), None, 2, None, ColorTypes(10), 0, 0, False, False)
+									if self._doSettleFreedSlaves_AI(pUnit):
+											return True
+
+							# UNITAI_MISSIONARY = 14
+							elif pUnit.getUnitAIType() == 14:
+									self.doAIMissionReligion(pUnit)
+
+							# Elefant (Zucht/Elefantenstall)
+							# if iUnitType == gc.getInfoTypeForString("UNIT_ELEFANT"):
+							#    #CyInterface().addMessage(gc.getGame().getActivePlayer(), True, 10, CyTranslator().getText("TXT_KEY_MESSAGE_TEST",("AI Elefant",1)), None, 2, None, ColorTypes(10), 0, 0, False, False)
+							#    if pTeam.isHasTech(gc.getInfoTypeForString("TECH_ELEFANTENZUCHT")):
+							#        #if self.doElefant_AI(pUnit):
+							#        if self.doSpreadStrategicBonus_AI(pUnit, gc.getInfoTypeForString("BUILDING_ELEPHANT_STABLE"), gc.getInfoTypeForString("BONUS_IVORY")):
+							#            return True
+
+							# Kamel (Zucht/Kamellager)
+							elif iUnitType == gc.getInfoTypeForString("UNIT_CAMEL"):
+									#CyInterface().addMessage(gc.getGame().getActivePlayer(), True, 10, CyTranslator().getText("TXT_KEY_MESSAGE_TEST",("AI Camel",1)), None, 2, None, ColorTypes(10), 0, 0, False, False)
+									if pTeam.isHasTech(gc.getInfoTypeForString("TECH_KAMELZUCHT")):
+											if self.doSpreadStrategicBonus_AI(pUnit, gc.getInfoTypeForString("BUILDING_CAMEL_STABLE"), gc.getInfoTypeForString("BONUS_CAMEL")):
+													return True
+
+							# Great Prophet makes Capital to Holy City (769)
+							elif iUnitType == gc.getInfoTypeForString("UNIT_PROPHET"):
+									pCapital = pOwner.getCapitalCity()
+									iReligions = gc.getNumReligionInfos()
+									for iReligion in range(iReligions):
+											if iReligion in L.LRelisRemapCapital:
+													if gc.getGame().isReligionFounded(iReligion):
+															pHolyCity = gc.getGame().getHolyCity(iReligion)
+															if not pHolyCity.isNone() and pHolyCity.getID() == pCapital.getID(): 
+																	continue
+															else:
+																	# Es darf auch dann die Heilige Stadt gesetzt werden, wenn sie zB zerstört wurde
+																	if pCapital.isHasReligion(iReligion) and (pHolyCity.isNone() or pHolyCity.getOwner() == iOwner):
+																			gc.getGame().setHolyCity(iReligion, pCapital, 0)
+																			
+																			for iPlayer in range(gc.getMAX_PLAYERS()):
+																					if not gc.getPlayer(iPlayer).isNone() and gc.getPlayer(iPlayer).isHuman():
+																							CyInterface().addMessage(iPlayer, True, 10,
+																								CyTranslator().getText("TXT_KEY_MESSAGE_GREAT_PROPHET_HOLY_CITY", (pCapital.getName(),gc.getReligionInfo(iReligion).getDescription())),
+																								"AS2D_WELOVEKING", 2, "Art/Interface/Buttons/Actions/button_action_holycity.dds", ColorTypes(13), pCapital.getX(), pCapital.getY(), True, True)
+																			
+																			pUnit.kill(True, -1)
+																			return True
+
+							# Trade and cultivation (Boggy). First, try cultivation. If unsuccessfull, try trade.
+							# if pUnit.getUnitAIType() ==
+							# gc.getInfoTypeForString("UNITAI_MERCHANT") and iUnitType != gc.getInfoTypeForString("UNIT_MERCHANT"):
+							if iUnitType in L.LCultivationUnits:
+									#CyInterface().addMessage(gc.getGame().getActivePlayer(), True, 10, "CultivationUnit: " + pOwner.getName(), None, 2, None, ColorTypes(5), 0, 0, False, False)
+									if PAE_Cultivation.doCultivation_AI(pUnit):
+											#CyInterface().addMessage(gc.getGame().getActivePlayer(), True, 10, CyTranslator().getText("TXT_KEY_MESSAGE_TEST",("Python AI Cultivation",1)), None, 2, None, ColorTypes(10), 0, 0, False, False)
+											return True
+
+									#CyInterface().addMessage(gc.getGame().getActivePlayer(), True, 10, "CultivationUnit: False", None, 2, None, ColorTypes(5), 0, 0, False, False)
+									if iUnitType != gc.getInfoTypeForString("UNIT_WORKBOAT") and not pUnit.plot().isCity():
+											pCity = PAE_Unit.getNearestCity(pUnit)
+											if pCity != None:
+													pUnit.getGroup().pushMoveToMission(pCity.getX(), pCity.getY())
+													return True
+											pUnit.getGroup().pushMission(MissionTypes.MISSION_SKIP, 0, 0, 0, True, False, MissionAITypes.NO_MISSIONAI, pUnit.plot(), pUnit)
+											return True
+
+									if pOwner.getUnitClassCount(pUnit.getUnitClassType()) > 3:
+											pOwner.changeGold(25)
+											pUnit.kill(True, -1)
+											return True
+
+
+							if iUnitType in L.LTradeUnits:
+
+									# Debug
+									# if iOwner != 0: return True
+									#CyInterface().addMessage(gc.getGame().getActivePlayer(), True, 10, "TradeUnit: " + pOwner.getName() + u"(%d)" % pOwner.getGold(), None, 2, None, ColorTypes(5), 0, 0, False, False)
+
+									if pOwner.getUnitClassCount(pUnit.getUnitClassType()) > 9:
+											pOwner.changeGold(25)
+											pUnit.kill(True, -1)
+											return True
+
+									# Handelsschiffe tauchen in Inlandsstädten auf
+									if not pPlot.isCoastalLand() and pUnit.getDomainType() == DomainTypes.DOMAIN_SEA:
+											pOwner.changeGold(25)
+											pUnit.kill(True, -1)
+											return True
+
+
+									# if pUnit.getGroup().getLengthMissionQueue() > 0: return True
+									# if PAE_Trade.doAutomateMerchant(pUnit):
+									#    if iOwner == 12: CyInterface().addMessage(gc.getGame().getActivePlayer(), True, 10, "AI doAutomateMerchant", None, 2, None, ColorTypes(10), 0, 0, False, False)
+									#    return True
+									# elif PAE_Trade.doAssignTradeRoute_AI(pUnit):
+									#    if iOwner == 12: CyInterface().addMessage(gc.getGame().getActivePlayer(), True, 10, "AI doAssignTradeRoute_AI", None, 2, None, ColorTypes(10), 0, 0, False, False)
+									#    # try again
+									#    if PAE_Trade.doAutomateMerchant(pUnit):
+									#        if iOwner == 12: CyInterface().addMessage(gc.getGame().getActivePlayer(), True, 10, "AI automate merchant new trade route", None, 2, None, ColorTypes(10), 0, 0, False, False)
+									#        return True
+
+									bTradeRouteActive = int(CvUtil.getScriptData(pUnit, ["autA", "t"], 0))
+									if bTradeRouteActive:
+											PAE_Trade.doAutomateMerchant(pUnit)
+											return True
+									elif not PAE_Trade.doAssignTradeRoute_AI(pUnit):
+											pOwner.changeGold(25)
+											pUnit.kill(True, -1)  # RAMK_CTD
+											return True
+
+									if pUnit.getDamage() > 0:
+											pUnit.getGroup().pushMission(MissionTypes.MISSION_HEAL, 0, 0, 0, True, False, MissionAITypes.NO_MISSIONAI, pUnit.plot(), pUnit)
+									#pUnit.getGroup().pushMission(MissionTypes.MISSION_SKIP, 0, 0, 0, True, False, MissionAITypes.NO_MISSIONAI, pUnit.plot(), pUnit)
+									return False
+
+							# Supply waggon
+							if iUnitType == gc.getInfoTypeForString("UNIT_SUPPLY_FOOD"):
+									# Option: Stadt mit Nahrung versorgen
+									pCity = PAE_Unit.getNearestCity(pUnit)
+									if pCity != None and not pCity.isNone():
+											pUnit.getGroup().pushMoveToMission(pCity.getX(), pCity.getY())
+											if pUnit.getX() == pCity.getX() and pUnit.getY() == pCity.getY():
+													pCity.changeFood(PAE_Unit.getUnitSupplyFood())
+													pUnit.kill(True, -1)  # RAMK_CTD
+											return True
+
+							iCivType = pUnit.getCivilizationType()
+
+							# PAE Veterans und Rank Unit Promo Features
+
+							# PAE 6.5 Katapult -> Feuerkatapult
+							if pUnit.isHasPromotion(gc.getInfoTypeForString("PROMOTION_ACCURACY3")):
+									if pUnit.getUnitClassType() == gc.getInfoTypeForString("UNITCLASS_CATAPULT"):
+											PAE_Unit.doUpgradeVeteran(pUnit, gc.getInfoTypeForString("UNIT_FIRE_CATAPULT"), True)
+											return True
+
+							# Unit Rang Promo -------
+							# KI: immer und kostenlos
+							
+							# RobA: Die folgenden Zeilen sind aus PAE VII und werden in PB_PAE_6.17 nicht gebraucht?  
+							# if pUnit.isHasPromotion(gc.getInfoTypeForString("PROMOTION_COMBAT4")):
+									#if iUnitType in L.LUnits4Praetorians:
+									#		if not pTeam.isHasTech(gc.getInfoTypeForString("TECH_GRENZHEER")):
+
+											# if pOwner.getUnitClassCount(gc.getInfoTypeForString("UNITCLASS_PRAETORIAN")) == 0:
+											#		if pOwner.getUnitClassCount(gc.getInfoTypeForString("UNITCLASS_LEGION_TRIBUN")):
+											#				if (pOwner.getUnitClassCount(gc.getInfoTypeForString("UNITCLASS_LEGION_CENTURIO")) or 
+											#						pOwner.getUnitClassCount(gc.getInfoTypeForString("UNITCLASS_LEGION_CENTURIO2")) ):
+											#								if (pOwner.getUnitClassCount(gc.getInfoTypeForString("UNITCLASS_LEGION_OPTIO")) or
+											#										pOwner.getUnitClassCount(gc.getInfoTypeForString("UNITCLASS_LEGION_OPTIO2")) ):
+											#										iNewUnit = gc.getInfoTypeForString("UNIT_PRAETORIAN")
+											#										PAE_Unit.doUpgradeVeteran(pUnit, iNewUnit, True)
+											#										return True
+							try:
+								iNewUnit = PAE_Unit.canUpgradeUnit(pUnit)
+								if iNewUnit != -1: # and CvUtil.getScriptData(pUnit, ["P", "t"]) == "RangPromoUp":
+										if PAE_Unit.doUpgradeRang(iOwner, pUnit.getID()):
 												return True
+
+								# Legion Kastell
+								# KI: immer, aber mit Kosten
+								# nie hoeher als Tribun/General
+								if pUnit.isHasPromotion(gc.getInfoTypeForString("PROMOTION_RANG_ROM_1")) and not pUnit.isHasPromotion(gc.getInfoTypeForString("PROMOTION_RANG_ROM_15")) or \
+												pUnit.isHasPromotion(gc.getInfoTypeForString("PROMOTION_RANG_ROM_LATE_1")) and not pUnit.isHasPromotion(gc.getInfoTypeForString("PROMOTION_RANG_ROM_LATE_10")):
+
+										# RobA: Korrektur Kastell-Kosten und CtD bei nicht römischen Völkern
+										iCiv = pOwner.getCivilizationType()
+										if iCiv == gc.getInfoTypeForString("CIVILIZATION_ROME") or iCiv == gc.getInfoTypeForString("CIVILIZATION_ETRUSCANS"):
+												# Kostet 25, aber wegen Reserve
+												if pOwner.getGold() > 50:
+														PAE_Unit.doKastell(iOwner, pUnit.getID())
 										else:
-												pUnit.setUnitAIType(UnitAITypes.UNITAI_ATTACK)
-												pUnit.setHasPromotion(iPromo, False)
-												pUnit.setHasPromotion(iPromo2, False)
-
-								# Barbarische Emigranten stehen nur rum und benoetigen unnoetig Rechenzeit
-								elif pUnit.getUnitType() == gc.getInfoTypeForString("UNIT_EMIGRANT"):
-										pUnit.kill(True, -1)
-										return True
-								# Barbarische befreite Sklaven stehen nur rum und benoetigen unnoetig Rechenzeit
-								elif pUnit.getUnitType() == gc.getInfoTypeForString("UNIT_FREED_SLAVE"):
-										pUnit.kill(True, -1)
-										return True
-								# Barbarische Haendler sind unnoetig
-								elif pUnit.getUnitType() in L.LTradeUnits:
-										pUnit.kill(True, -1)
-										return True
-								# Barbarische Tiere sollen keine Stadt betreten / Barbarian animals will be disbanded when moving into a city
-								elif pUnit.getUnitAIType() == UnitAITypes.UNITAI_ANIMAL:
-										if pPlot.isCity() or pPlot.getFeatureType() == gc.getInfoTypeForString("FEATURE_DARK_ICE"):
-												pUnit.kill(True, -1)
 												return True
 
-								# ab hier mit BarbUnits raus aus der kompletten Funktion AI_unitUpdate
-								return False
-						# -------------------------------
-
-						# Inquisitor
-						if iUnitType == gc.getInfoTypeForString("UNIT_INQUISITOR"):
-								#CyInterface().addMessage(gc.getGame().getActivePlayer(), True, 10, CyTranslator().getText("TXT_KEY_MESSAGE_TEST",("AI Inquisitor",1)), None, 2, None, ColorTypes(10), 0, 0, False, False)
-								if self.doInquisitorCore_AI(pUnit):
-										return True
-
-						# Freed slaves
-						elif iUnitType == gc.getInfoTypeForString("UNIT_FREED_SLAVE"):
-								#CyInterface().addMessage(gc.getGame().getActivePlayer(), True, 10, CyTranslator().getText("TXT_KEY_MESSAGE_TEST",("AI Freed Slave",1)), None, 2, None, ColorTypes(10), 0, 0, False, False)
-								if self._doSettleFreedSlaves_AI(pUnit):
-										return True
-
-						# UNITAI_MISSIONARY = 14
-						elif pUnit.getUnitAIType() == 14:
-								self.doAIMissionReligion(pUnit)
-
-						# Elefant (Zucht/Elefantenstall)
-						# if iUnitType == gc.getInfoTypeForString("UNIT_ELEFANT"):
-						#    #CyInterface().addMessage(gc.getGame().getActivePlayer(), True, 10, CyTranslator().getText("TXT_KEY_MESSAGE_TEST",("AI Elefant",1)), None, 2, None, ColorTypes(10), 0, 0, False, False)
-						#    if pTeam.isHasTech(gc.getInfoTypeForString("TECH_ELEFANTENZUCHT")):
-						#        #if self.doElefant_AI(pUnit):
-						#        if self.doSpreadStrategicBonus_AI(pUnit, gc.getInfoTypeForString("BUILDING_ELEPHANT_STABLE"), gc.getInfoTypeForString("BONUS_IVORY")):
-						#            return True
-
-						# Kamel (Zucht/Kamellager)
-						elif iUnitType == gc.getInfoTypeForString("UNIT_CAMEL"):
-								#CyInterface().addMessage(gc.getGame().getActivePlayer(), True, 10, CyTranslator().getText("TXT_KEY_MESSAGE_TEST",("AI Camel",1)), None, 2, None, ColorTypes(10), 0, 0, False, False)
-								if pTeam.isHasTech(gc.getInfoTypeForString("TECH_KAMELZUCHT")):
-										if self.doSpreadStrategicBonus_AI(pUnit, gc.getInfoTypeForString("BUILDING_CAMEL_STABLE"), gc.getInfoTypeForString("BONUS_CAMEL")):
-												return True
-
-						# Great Prophet makes Capital to Holy City (769)
-						elif iUnitType == gc.getInfoTypeForString("UNIT_PROPHET"):
-								pCapital = pOwner.getCapitalCity()
-								iReligions = gc.getNumReligionInfos()
-								for iReligion in range(iReligions):
-										if iReligion in L.LRelisRemapCapital:
-												if gc.getGame().isReligionFounded(iReligion):
-														pHolyCity = gc.getGame().getHolyCity(iReligion)
-														if not pHolyCity.isNone() and pHolyCity.getID() == pCapital.getID(): 
-																continue
-														else:
-																# Es darf auch dann die Heilige Stadt gesetzt werden, wenn sie zB zerstört wurde
-																if pCapital.isHasReligion(iReligion) and (pHolyCity.isNone() or pHolyCity.getOwner() == iOwner):
-																		gc.getGame().setHolyCity(iReligion, pCapital, 0)
-																		
-																		for iPlayer in range(gc.getMAX_PLAYERS()):
-																				if not gc.getPlayer(iPlayer).isNone() and gc.getPlayer(iPlayer).isHuman():
-																						CyInterface().addMessage(iPlayer, True, 10,
-																							CyTranslator().getText("TXT_KEY_MESSAGE_GREAT_PROPHET_HOLY_CITY", (pCapital.getName(),gc.getReligionInfo(iReligion).getDescription())),
-																							"AS2D_WELOVEKING", 2, "Art/Interface/Buttons/Actions/button_action_holycity.dds", ColorTypes(13), pCapital.getX(), pCapital.getY(), True, True)
-																		
-																		pUnit.kill(True, -1)
-																		return True
-
-						# Trade and cultivation (Boggy). First, try cultivation. If unsuccessfull, try trade.
-						# if pUnit.getUnitAIType() ==
-						# gc.getInfoTypeForString("UNITAI_MERCHANT") and iUnitType != gc.getInfoTypeForString("UNIT_MERCHANT"):
-						if iUnitType in L.LCultivationUnits:
-								#CyInterface().addMessage(gc.getGame().getActivePlayer(), True, 10, "CultivationUnit: " + pOwner.getName(), None, 2, None, ColorTypes(5), 0, 0, False, False)
-								if PAE_Cultivation.doCultivation_AI(pUnit):
-										#CyInterface().addMessage(gc.getGame().getActivePlayer(), True, 10, CyTranslator().getText("TXT_KEY_MESSAGE_TEST",("Python AI Cultivation",1)), None, 2, None, ColorTypes(10), 0, 0, False, False)
-										return True
-
-								#CyInterface().addMessage(gc.getGame().getActivePlayer(), True, 10, "CultivationUnit: False", None, 2, None, ColorTypes(5), 0, 0, False, False)
-								if iUnitType != gc.getInfoTypeForString("UNIT_WORKBOAT") and not pUnit.plot().isCity():
-										pCity = PAE_Unit.getNearestCity(pUnit)
-										if pCity != None:
-												pUnit.getGroup().pushMoveToMission(pCity.getX(), pCity.getY())
-												return True
-										pUnit.getGroup().pushMission(MissionTypes.MISSION_SKIP, 0, 0, 0, True, False, MissionAITypes.NO_MISSIONAI, pUnit.plot(), pUnit)
-										return True
-
-								if pOwner.getUnitClassCount(pUnit.getUnitClassType()) > 3:
-										pOwner.changeGold(25)
-										pUnit.kill(True, -1)
-										return True
-
-
-						if iUnitType in L.LTradeUnits:
-
-								# Debug
-								# if iOwner != 0: return True
-								#CyInterface().addMessage(gc.getGame().getActivePlayer(), True, 10, "TradeUnit: " + pOwner.getName() + u"(%d)" % pOwner.getGold(), None, 2, None, ColorTypes(5), 0, 0, False, False)
-
-								if pOwner.getUnitClassCount(pUnit.getUnitClassType()) > 9:
-										pOwner.changeGold(25)
-										pUnit.kill(True, -1)
-										return True
-
-								# Handelsschiffe tauchen in Inlandsstädten auf
-								if not pPlot.isCoastalLand() and pUnit.getDomainType() == DomainTypes.DOMAIN_SEA:
-										pOwner.changeGold(25)
-										pUnit.kill(True, -1)
-										return True
-
-
-								# if pUnit.getGroup().getLengthMissionQueue() > 0: return True
-								# if PAE_Trade.doAutomateMerchant(pUnit):
-								#    if iOwner == 12: CyInterface().addMessage(gc.getGame().getActivePlayer(), True, 10, "AI doAutomateMerchant", None, 2, None, ColorTypes(10), 0, 0, False, False)
-								#    return True
-								# elif PAE_Trade.doAssignTradeRoute_AI(pUnit):
-								#    if iOwner == 12: CyInterface().addMessage(gc.getGame().getActivePlayer(), True, 10, "AI doAssignTradeRoute_AI", None, 2, None, ColorTypes(10), 0, 0, False, False)
-								#    # try again
-								#    if PAE_Trade.doAutomateMerchant(pUnit):
-								#        if iOwner == 12: CyInterface().addMessage(gc.getGame().getActivePlayer(), True, 10, "AI automate merchant new trade route", None, 2, None, ColorTypes(10), 0, 0, False, False)
-								#        return True
-
-								bTradeRouteActive = int(CvUtil.getScriptData(pUnit, ["autA", "t"], 0))
-								if bTradeRouteActive:
-										PAE_Trade.doAutomateMerchant(pUnit)
-										return True
-								elif not PAE_Trade.doAssignTradeRoute_AI(pUnit):
-										pOwner.changeGold(25)
-										pUnit.kill(True, -1)  # RAMK_CTD
-										return True
-
-								if pUnit.getDamage() > 0:
-										pUnit.getGroup().pushMission(MissionTypes.MISSION_HEAL, 0, 0, 0, True, False, MissionAITypes.NO_MISSIONAI, pUnit.plot(), pUnit)
-								#pUnit.getGroup().pushMission(MissionTypes.MISSION_SKIP, 0, 0, 0, True, False, MissionAITypes.NO_MISSIONAI, pUnit.plot(), pUnit)
-								return False
-
-						# Supply waggon
-						if iUnitType == gc.getInfoTypeForString("UNIT_SUPPLY_FOOD"):
-								# Option: Stadt mit Nahrung versorgen
-								pCity = PAE_Unit.getNearestCity(pUnit)
-								if pCity != None and not pCity.isNone():
-										pUnit.getGroup().pushMoveToMission(pCity.getX(), pCity.getY())
-										if pUnit.getX() == pCity.getX() and pUnit.getY() == pCity.getY():
-												pCity.changeFood(PAE_Unit.getUnitSupplyFood())
-												pUnit.kill(True, -1)  # RAMK_CTD
-										return True
-
-						iCivType = pUnit.getCivilizationType()
-
-						# PAE Veterans und Rank Unit Promo Features
-
-						# PAE 6.5 Katapult -> Feuerkatapult
-						if pUnit.isHasPromotion(gc.getInfoTypeForString("PROMOTION_ACCURACY3")):
-								if pUnit.getUnitClassType() == gc.getInfoTypeForString("UNITCLASS_CATAPULT"):
-										PAE_Unit.doUpgradeVeteran(pUnit, gc.getInfoTypeForString("UNIT_FIRE_CATAPULT"), True)
-										return True
-
-						# Unit Rang Promo -------
-						# KI: immer und kostenlos
-						
-						# RobA: Zuerst CtD ausfiltern 
-						iNewUnit = PAE_Unit.canUpgradeUnit(pUnit)
-						if iNewUnit == -1:
-								return True
-						# RobA: Jetzt können alle Funktionen gefahrlos ausgfeführt werden
-
-						# LEGION zu Praetorians
-						if pUnit.isHasPromotion(gc.getInfoTypeForString("PROMOTION_COMBAT4")):
-
-								# RobA: bereits erledigt
-								#if iUnitType in L.LUnits4Praetorians:
-								#		if not pTeam.isHasTech(gc.getInfoTypeForString("TECH_GRENZHEER")):
-
-								if pOwner.getUnitClassCount(gc.getInfoTypeForString("UNITCLASS_PRAETORIAN")) == 0:
-										if pOwner.getUnitClassCount(gc.getInfoTypeForString("UNITCLASS_LEGION_TRIBUN")):
-												if (pOwner.getUnitClassCount(gc.getInfoTypeForString("UNITCLASS_LEGION_CENTURIO")) or 
-														pOwner.getUnitClassCount(gc.getInfoTypeForString("UNITCLASS_LEGION_CENTURIO2")) ):
-																if (pOwner.getUnitClassCount(gc.getInfoTypeForString("UNITCLASS_LEGION_OPTIO")) or
-																		pOwner.getUnitClassCount(gc.getInfoTypeForString("UNITCLASS_LEGION_OPTIO2")) ):
-																		iNewUnit = gc.getInfoTypeForString("UNIT_PRAETORIAN")
-																		PAE_Unit.doUpgradeVeteran(pUnit, iNewUnit, True)
-																		return True
-						
-						# RobA: bereits erledigt
-						# iNewUnit = PAE_Unit.canUpgradeUnit(pUnit)
-						# if iNewUnit != -1: # and CvUtil.getScriptData(pUnit, ["P", "t"]) == "RangPromoUp":
-
-						if PAE_Unit.doUpgradeRang(iOwner, pUnit.getID()):
-								return True
-
-						# Legion Kastell
-						# KI: immer, aber mit Kosten
-						# nie hoeher als Tribun/General
-						if pUnit.isHasPromotion(gc.getInfoTypeForString("PROMOTION_RANG_ROM_1")) and not pUnit.isHasPromotion(gc.getInfoTypeForString("PROMOTION_RANG_ROM_15")) or \
-										pUnit.isHasPromotion(gc.getInfoTypeForString("PROMOTION_RANG_ROM_LATE_1")) and not pUnit.isHasPromotion(gc.getInfoTypeForString("PROMOTION_RANG_ROM_LATE_10")):
-
-								# Kostet 25, aber wegen Reserve
-								if pOwner.getGold() > 50:
-										PAE_Unit.doKastell(iOwner, pUnit.getID())
-
-						# Terrain Promos - Ausbildner / Trainer (in City)
-						lTrainerPromotions = [
-								gc.getInfoTypeForString("PROMOTION_WOODSMAN5"),
-								gc.getInfoTypeForString("PROMOTION_GUERILLA5"),
-								gc.getInfoTypeForString("PROMOTION_JUNGLE5"),
-								gc.getInfoTypeForString("PROMOTION_SUMPF5"),
-								gc.getInfoTypeForString("PROMOTION_DESERT5"),
-								gc.getInfoTypeForString("PROMOTION_CITY_RAIDER5"),
-								gc.getInfoTypeForString("PROMOTION_CITY_GARRISON5"),
-								gc.getInfoTypeForString("PROMOTION_PILLAGE5"),
-								gc.getInfoTypeForString("PROMOTION_NAVIGATION4")
-						]
-						for iPromo in lTrainerPromotions:
-								if pUnit.isHasPromotion(iPromo):
-										if self._AI_SettleTrainer(pUnit):
-												# wenn die Einheit per AISettleTrainer gekillt wurde, dann raus hier
-												return True
-
-						# BEGIN Unit -> Horse UPGRADE
-						if pTeam.isHasTech(gc.getInfoTypeForString("TECH_HORSEBACK_RIDING_2")):
-								if iUnitType in L.LUnitAuxiliar or iUnitType == gc.getInfoTypeForString("UNIT_FOEDERATI"):
-
-										bSearchPlot = False
-										if iUnitType in L.LUnitAuxiliar:
-												iNewUnitType = gc.getInfoTypeForString("UNIT_AUXILIAR_HORSE")
-												bSearchPlot = True
-										elif iUnitType == gc.getInfoTypeForString("UNIT_FOEDERATI"):
-												if pTeam.isHasTech(gc.getInfoTypeForString("TECH_HUFEISEN")):
-														iNewUnitType = gc.getInfoTypeForString("UNIT_HEAVY_HORSEMAN")
-														bSearchPlot = True
-
-										# Pferd suchen
-										if bSearchPlot:
-												UnitHorse = gc.getInfoTypeForString("UNIT_HORSE")
-												iRange = pPlot.getNumUnits()
-												for i in range(iRange):
-														pLoopUnit = pPlot.getUnit(i)
-														if pLoopUnit.getUnitType() == UnitHorse and pLoopUnit.getOwner() == iOwner:
-																# Create a new unit
-																NewUnit = pOwner.initUnit(iNewUnitType, pUnit.getX(), pUnit.getY(), UnitAITypes.NO_UNITAI, DirectionTypes.DIRECTION_SOUTH)
-																PAE_Unit.initUnitFromUnit(pUnit, NewUnit)
-																NewUnit.setDamage(pUnit.getDamage(), -1)
-																NewUnit.changeMoves(90)
-																# pUnit.doCommand(CommandTypes.COMMAND_DELETE, -1, -1)
-																pUnit.kill(True, -1)  # RAMK_CTD
-																pLoopUnit.kill(False, -1)  # andere Einheit direkt toeten, siehe isSuicide im CombatResult
-																return True
-						# END Unit -> Horse UPGRADE
-
-						# Slaves settle into city
-						if iUnitType == gc.getInfoTypeForString("UNIT_SLAVE"):
-								if pPlot.isCity() and pPlot.getOwner() == iOwner:
-										pCity = pPlot.getPlotCity()
-										if not pCity.isNone() and pCity.getID() not in self.PAE_AI_Cities_Slaves:
-												eSpecialistGlad = gc.getInfoTypeForString("SPECIALIST_GLADIATOR")
-												eSpecialistHouse = gc.getInfoTypeForString("SPECIALIST_SLAVE")
-												eSpecialistFood = gc.getInfoTypeForString("SPECIALIST_SLAVE_FOOD")
-												eSpecialistProd = gc.getInfoTypeForString("SPECIALIST_SLAVE_PROD")
-												iCityPop = pCity.getPopulation()
-												iCityGlads = pCity.getFreeSpecialistCount(eSpecialistGlad)
-												iCitySlaves = pCity.getFreeSpecialistCount(eSpecialistHouse)
-												iCitySlavesFood = pCity.getFreeSpecialistCount(eSpecialistFood)
-												iCitySlavesProd = pCity.getFreeSpecialistCount(eSpecialistProd)
-
-												# Zuerst Sklavenmarkt bauen
-												bSlaveMarket = False
-												iBuilding1 = gc.getInfoTypeForString("BUILDING_SKLAVENMARKT")
-												iBuilding2 = gc.getInfoTypeForString("BUILDING_STADT")
-												if pCity.isHasBuilding(iBuilding1):
-														bSlaveMarket = True
-												elif pCity.isHasBuilding(iBuilding2):
-														pCity.setNumRealBuilding(iBuilding1, 1)
-														# pUnit.doCommand(CommandTypes.COMMAND_DELETE, -1, -1) # RAMK_CTD
-														pUnit.kill(True, -1)
+								# Terrain Promos - Ausbildner / Trainer (in City)
+								lTrainerPromotions = [
+										gc.getInfoTypeForString("PROMOTION_WOODSMAN5"),
+										gc.getInfoTypeForString("PROMOTION_GUERILLA5"),
+										gc.getInfoTypeForString("PROMOTION_JUNGLE5"),
+										gc.getInfoTypeForString("PROMOTION_SUMPF5"),
+										gc.getInfoTypeForString("PROMOTION_DESERT5"),
+										gc.getInfoTypeForString("PROMOTION_CITY_RAIDER5"),
+										gc.getInfoTypeForString("PROMOTION_CITY_GARRISON5"),
+										gc.getInfoTypeForString("PROMOTION_PILLAGE5"),
+										gc.getInfoTypeForString("PROMOTION_NAVIGATION4")
+								]
+								for iPromo in lTrainerPromotions:
+										if pUnit.isHasPromotion(iPromo):
+												if self._AI_SettleTrainer(pUnit):
+														# wenn die Einheit per AISettleTrainer gekillt wurde, dann raus hier
 														return True
 
-												# Weitere Cities auf Sklavenmarkt checken und Sklaven zuerst dort hinschicken
-												if len(lCities) > len(self.PAE_AI_Cities_Slavemarket):
-														if CvUtil.myRandom(10, "ai_sklavenmarkt") < 2:
-																(loopCity, pIter) = pOwner.firstCity(False)
-																while loopCity:
-																		if loopCity.getID() not in self.PAE_AI_Cities_Slavemarket:
-																				# PAE AI City Instance
-																				self.PAE_AI_Cities_Slavemarket.append(loopCity.getID())
-																				if not loopCity.isHasBuilding(iBuilding1):
-																						if loopCity.isHasBuilding(iBuilding2):
-																								pUnit.getGroup().pushMoveToMission(loopCity.getX(), loopCity.getY())
-																								return True
-																		(loopCity, pIter) = pOwner.nextCity(pIter, False)
+								# BEGIN Unit -> Horse UPGRADE
+								if pTeam.isHasTech(gc.getInfoTypeForString("TECH_HORSEBACK_RIDING_2")):
+										if iUnitType in L.LUnitAuxiliar or iUnitType == gc.getInfoTypeForString("UNIT_FOEDERATI"):
 
-												iCitySlavesAll = iCitySlaves + iCitySlavesFood + iCitySlavesProd
+												bSearchPlot = False
+												if iUnitType in L.LUnitAuxiliar:
+														iNewUnitType = gc.getInfoTypeForString("UNIT_AUXILIAR_HORSE")
+														bSearchPlot = True
+												elif iUnitType == gc.getInfoTypeForString("UNIT_FOEDERATI"):
+														if pTeam.isHasTech(gc.getInfoTypeForString("TECH_HUFEISEN")):
+																iNewUnitType = gc.getInfoTypeForString("UNIT_HEAVY_HORSEMAN")
+																bSearchPlot = True
 
-												## TEST ##
-												#CyInterface().addMessage(gc.getGame().getActivePlayer(), True, 10, CyTranslator().getText("TXT_KEY_MESSAGE_TEST",("AI Slave",iCitySlavesAll)), None, 2, None, ColorTypes(10), 0, 0, False, False)
-
-												bHasGladTech = False
-												iNumGlads = 0
-												if pTeam.isHasTech(gc.getInfoTypeForString("TECH_GLADIATOR")):
-														bHasGladTech = True
-														# Gladidatorenplatz reservieren fuer Glads aber nur ab Pop 6
-														if iCityPop > 5:
-																iNumGlads = 3
-
-												# settle as slaves
-												if pCity.happyLevel() > iCitySlavesAll:
-														if iCitySlavesAll + iCityGlads + iNumGlads < iCityPop:
-																if iCitySlavesFood == 0:
-																		pCity.changeFreeSpecialistCount(eSpecialistFood, 1)
-																elif iCitySlavesProd == 0:
-																		pCity.changeFreeSpecialistCount(eSpecialistProd, 1)
-																elif iCitySlavesFood < iCitySlavesProd or iCitySlavesFood < iCitySlaves:
-																		pCity.changeFreeSpecialistCount(eSpecialistFood, 1)
-																elif iCitySlavesProd < iCitySlavesFood or iCitySlavesProd < iCitySlaves:
-																		pCity.changeFreeSpecialistCount(eSpecialistProd, 1)
-																else:
-																		pCity.changeFreeSpecialistCount(eSpecialistHouse, 1)
-
-																# pUnit.doCommand(CommandTypes.COMMAND_DELETE, -1, -1)
-																pUnit.kill(True, -1)  # RAMK_CTD
-																return True
-
-														# settle as gladiators
-														if bHasGladTech:
-																if iCitySlavesAll + iCityGlads <= iCityPop:
-																		pCity.changeFreeSpecialistCount(eSpecialistGlad, 1)
+												# Pferd suchen
+												if bSearchPlot:
+														UnitHorse = gc.getInfoTypeForString("UNIT_HORSE")
+														iRange = pPlot.getNumUnits()
+														for i in range(iRange):
+																pLoopUnit = pPlot.getUnit(i)
+																if pLoopUnit.getUnitType() == UnitHorse and pLoopUnit.getOwner() == iOwner:
+																		# Create a new unit
+																		NewUnit = pOwner.initUnit(iNewUnitType, pUnit.getX(), pUnit.getY(), UnitAITypes.NO_UNITAI, DirectionTypes.DIRECTION_SOUTH)
+																		PAE_Unit.initUnitFromUnit(pUnit, NewUnit)
+																		NewUnit.setDamage(pUnit.getDamage(), -1)
+																		NewUnit.changeMoves(90)
 																		# pUnit.doCommand(CommandTypes.COMMAND_DELETE, -1, -1)
 																		pUnit.kill(True, -1)  # RAMK_CTD
+																		pLoopUnit.kill(False, -1)  # andere Einheit direkt toeten, siehe isSuicide im CombatResult
 																		return True
+							except:
+								CyInterface().addMessage(gc.getGame().getActivePlayer(), True, 10, "Fehler im UnitUpgrade", None, 2, None, ColorTypes(10), 0, 0, False, False)
+							# END Unit -> Horse UPGRADE
 
-												# Priority 1 - Schule
+							# Slaves settle into city
+							if iUnitType == gc.getInfoTypeForString("UNIT_SLAVE"):
+									if pPlot.isCity() and pPlot.getOwner() == iOwner:
+											pCity = pPlot.getPlotCity()
+											if not pCity.isNone() and pCity.getID() not in self.PAE_AI_Cities_Slaves:
+													eSpecialistGlad = gc.getInfoTypeForString("SPECIALIST_GLADIATOR")
+													eSpecialistHouse = gc.getInfoTypeForString("SPECIALIST_SLAVE")
+													eSpecialistFood = gc.getInfoTypeForString("SPECIALIST_SLAVE_FOOD")
+													eSpecialistProd = gc.getInfoTypeForString("SPECIALIST_SLAVE_PROD")
+													iCityPop = pCity.getPopulation()
+													iCityGlads = pCity.getFreeSpecialistCount(eSpecialistGlad)
+													iCitySlaves = pCity.getFreeSpecialistCount(eSpecialistHouse)
+													iCitySlavesFood = pCity.getFreeSpecialistCount(eSpecialistFood)
+													iCitySlavesProd = pCity.getFreeSpecialistCount(eSpecialistProd)
 
-												# assign to school
-												iBuilding1 = gc.getInfoTypeForString('BUILDING_SCHULE')
-												if pCity.isHasBuilding(iBuilding1):
-														iCulture = pCity.getBuildingCommerceByBuilding(CommerceTypes.COMMERCE_RESEARCH, iBuilding1)
-														if iCulture < 10:
-																iNewCulture = iCulture + 2
-																pCity.setBuildingCommerceChange(gc.getBuildingInfo(iBuilding1).getBuildingClassType(), CommerceTypes.COMMERCE_RESEARCH, iNewCulture)
-																# pUnit.doCommand(CommandTypes.COMMAND_DELETE, -1, -1)
-																pUnit.kill(True, -1)  # RAMK_CTD
-																return True
+													# Zuerst Sklavenmarkt bauen
+													bSlaveMarket = False
+													iBuilding1 = gc.getInfoTypeForString("BUILDING_SKLAVENMARKT")
+													iBuilding2 = gc.getInfoTypeForString("BUILDING_STADT")
+													if pCity.isHasBuilding(iBuilding1):
+															bSlaveMarket = True
+													elif pCity.isHasBuilding(iBuilding2):
+															pCity.setNumRealBuilding(iBuilding1, 1)
+															# pUnit.doCommand(CommandTypes.COMMAND_DELETE, -1, -1) # RAMK_CTD
+															pUnit.kill(True, -1)
+															return True
 
-												# assign to library
-												iBuilding1 = gc.getInfoTypeForString('BUILDING_LIBRARY')
-												if pCity.isHasBuilding(iBuilding1):
-														iCulture = pCity.getBuildingCommerceByBuilding(CommerceTypes.COMMERCE_RESEARCH, iBuilding1)
-														if iCulture < 10:
-																iNewCulture = iCulture + 2
-																pCity.setBuildingCommerceChange(gc.getBuildingInfo(iBuilding1).getBuildingClassType(), CommerceTypes.COMMERCE_RESEARCH, iNewCulture)
-																# pUnit.doCommand(CommandTypes.COMMAND_DELETE, -1, -1)
-																pUnit.kill(True, -1)  # RAMK_CTD
-																return True
+													# Weitere Cities auf Sklavenmarkt checken und Sklaven zuerst dort hinschicken
+													if len(lCities) > len(self.PAE_AI_Cities_Slavemarket):
+															if CvUtil.myRandom(10, "ai_sklavenmarkt") < 2:
+																	(loopCity, pIter) = pOwner.firstCity(False)
+																	while loopCity:
+																			if loopCity.getID() not in self.PAE_AI_Cities_Slavemarket:
+																					# PAE AI City Instance
+																					self.PAE_AI_Cities_Slavemarket.append(loopCity.getID())
+																					if not loopCity.isHasBuilding(iBuilding1):
+																							if loopCity.isHasBuilding(iBuilding2):
+																									pUnit.getGroup().pushMoveToMission(loopCity.getX(), loopCity.getY())
+																									return True
+																			(loopCity, pIter) = pOwner.nextCity(pIter, False)
 
-												# Priority 2a - Brotmanufaktur
-												# assign to bread manufactory
-												iBuilding1 = gc.getInfoTypeForString('BUILDING_BROTMANUFAKTUR')
-												if pCity.isHasBuilding(iBuilding1):
-														iFood = pCity.getBuildingYieldChange(gc.getBuildingInfo(iBuilding1).getBuildingClassType(), YieldTypes.YIELD_FOOD)
-														if iFood < 3:
-																iFood += 1
-																pCity.setBuildingYieldChange(gc.getBuildingInfo(iBuilding1).getBuildingClassType(), YieldTypes.YIELD_FOOD, iFood)
-																# pUnit.doCommand(CommandTypes.COMMAND_DELETE, -1, -1)
-																pUnit.kill(True, -1)  # RAMK_CTD
-																return True
+													iCitySlavesAll = iCitySlaves + iCitySlavesFood + iCitySlavesProd
 
-												# Priority 2b - Manufaktur
-												# assign to manufactory
-												iBuilding1 = gc.getInfoTypeForString('BUILDING_CORP3')
-												if pCity.isHasBuilding(iBuilding1):
-														#iFood = pCity.getBuildingYieldChange(gc.getBuildingInfo(iBuilding1).getBuildingClassType(), YieldTypes.YIELD_FOOD)
-														iProd = pCity.getBuildingYieldChange(gc.getBuildingInfo(iBuilding1).getBuildingClassType(), YieldTypes.YIELD_PRODUCTION)
-														if iProd < 5:  # and iProd <= iFood:
-																iProd += 1
-																pCity.setBuildingYieldChange(gc.getBuildingInfo(iBuilding1).getBuildingClassType(), YieldTypes.YIELD_PRODUCTION, iProd)
-																# pUnit.doCommand(CommandTypes.COMMAND_DELETE, -1, -1)
-																pUnit.kill(True, -1)  # RAMK_CTD
-																return True
-														# elif iFood < 5:
-														#    iFood += 1
-														#    pCity.setBuildingYieldChange(gc.getBuildingInfo(iBuilding1).getBuildingClassType(), YieldTypes.YIELD_FOOD, iFood)
-														#    # pUnit.doCommand(CommandTypes.COMMAND_DELETE, -1, -1)
-														#    pUnit.kill(True, -1)  # RAMK_CTD
-														#    return True
+													## TEST ##
+													#CyInterface().addMessage(gc.getGame().getActivePlayer(), True, 10, CyTranslator().getText("TXT_KEY_MESSAGE_TEST",("AI Slave",iCitySlavesAll)), None, 2, None, ColorTypes(10), 0, 0, False, False)
 
-												# Priority 3 - Bordell
-												# assign to the house of pleasure (bordell/freudenhaus)
-												if PAE_Sklaven.doSlave2Bordell(pCity, pUnit):
-														return True
+													bHasGladTech = False
+													iNumGlads = 0
+													if pTeam.isHasTech(gc.getInfoTypeForString("TECH_GLADIATOR")):
+															bHasGladTech = True
+															# Gladidatorenplatz reservieren fuer Glads aber nur ab Pop 6
+															if iCityPop > 5:
+																	iNumGlads = 3
 
-												# Priority 4 - Theater
-												# assign to the theatre
-												if PAE_Sklaven.doSlave2Theatre(pCity, pUnit):
-														return True
+													# settle as slaves
+													if pCity.happyLevel() > iCitySlavesAll:
+															if iCitySlavesAll + iCityGlads + iNumGlads < iCityPop:
+																	if iCitySlavesFood == 0:
+																			pCity.changeFreeSpecialistCount(eSpecialistFood, 1)
+																	elif iCitySlavesProd == 0:
+																			pCity.changeFreeSpecialistCount(eSpecialistProd, 1)
+																	elif iCitySlavesFood < iCitySlavesProd or iCitySlavesFood < iCitySlaves:
+																			pCity.changeFreeSpecialistCount(eSpecialistFood, 1)
+																	elif iCitySlavesProd < iCitySlavesFood or iCitySlavesProd < iCitySlaves:
+																			pCity.changeFreeSpecialistCount(eSpecialistProd, 1)
+																	else:
+																			pCity.changeFreeSpecialistCount(eSpecialistHouse, 1)
 
-												# Priority 5 - Palace
-												# assign to the Palace  10%
-												if CvUtil.myRandom(10, "assign_slave_palace") == 1:
-														if PAE_Sklaven.doSlave2Palace(pCity, pUnit):
-																return True
+																	# pUnit.doCommand(CommandTypes.COMMAND_DELETE, -1, -1)
+																	pUnit.kill(True, -1)  # RAMK_CTD
+																	return True
 
-												# Priority 6 - Temples
-												# assign to a temple 10%
-												if CvUtil.myRandom(10, "assign_slave_temple") == 1:
-														if PAE_Sklaven.doSlave2Temple(pCity, pUnit):
-																return True
+															# settle as gladiators
+															if bHasGladTech:
+																	if iCitySlavesAll + iCityGlads <= iCityPop:
+																			pCity.changeFreeSpecialistCount(eSpecialistGlad, 1)
+																			# pUnit.doCommand(CommandTypes.COMMAND_DELETE, -1, -1)
+																			pUnit.kill(True, -1)  # RAMK_CTD
+																			return True
 
-												# Priority 7 - Feuerwehr
-												# assign to the fire station 10%
-												if CvUtil.myRandom(10, "assign_slave_temple") == 1:
-														if PAE_Sklaven.doSlave2Feuerwehr(pCity, pUnit):
-																return True
+													# Priority 1 - Schule
 
-												# Priority 8 - Sell slave 25%
-												if bSlaveMarket:
-														if CvUtil.myRandom(4, "ai_sell_slave") == 1:
-																pUnit.getGroup().pushMission(MissionTypes.MISSION_TRADE, 0, 0, 0, False, False, MissionAITypes.NO_MISSIONAI, pPlot, pUnit)
-																return True
+													# assign to school
+													iBuilding1 = gc.getInfoTypeForString('BUILDING_SCHULE')
+													if pCity.isHasBuilding(iBuilding1):
+															iCulture = pCity.getBuildingCommerceByBuilding(CommerceTypes.COMMERCE_RESEARCH, iBuilding1)
+															if iCulture < 10:
+																	iNewCulture = iCulture + 2
+																	pCity.setBuildingCommerceChange(gc.getBuildingInfo(iBuilding1).getBuildingClassType(), CommerceTypes.COMMERCE_RESEARCH, iNewCulture)
+																	# pUnit.doCommand(CommandTypes.COMMAND_DELETE, -1, -1)
+																	pUnit.kill(True, -1)  # RAMK_CTD
+																	return True
 
-												# PAE AI City Instance
-												self.PAE_AI_Cities_Slaves.append(pCity.getID())
+													# assign to library
+													iBuilding1 = gc.getInfoTypeForString('BUILDING_LIBRARY')
+													if pCity.isHasBuilding(iBuilding1):
+															iCulture = pCity.getBuildingCommerceByBuilding(CommerceTypes.COMMERCE_RESEARCH, iBuilding1)
+															if iCulture < 10:
+																	iNewCulture = iCulture + 2
+																	pCity.setBuildingCommerceChange(gc.getBuildingInfo(iBuilding1).getBuildingClassType(), CommerceTypes.COMMERCE_RESEARCH, iNewCulture)
+																	# pUnit.doCommand(CommandTypes.COMMAND_DELETE, -1, -1)
+																	pUnit.kill(True, -1)  # RAMK_CTD
+																	return True
 
-												# Sklaven sicherheitshalber in die Hauptstadt schicken
-												pCapital = pOwner.getCapitalCity()
-												if pCapital.getID() != -1 and pPlot.getArea() == pCapital.area().getID():
-														if pCapital is not None and not pCapital.isNone():
-																if not pUnit.atPlot(pCapital.plot()):
-																		pUnit.getGroup().pushMoveToMission(pCapital.getX(), pCapital.getY())
-																		return True
+													# Priority 2a - Brotmanufaktur
+													# assign to bread manufactory
+													iBuilding1 = gc.getInfoTypeForString('BUILDING_BROTMANUFAKTUR')
+													if pCity.isHasBuilding(iBuilding1):
+															iFood = pCity.getBuildingYieldChange(gc.getBuildingInfo(iBuilding1).getBuildingClassType(), YieldTypes.YIELD_FOOD)
+															if iFood < 3:
+																	iFood += 1
+																	pCity.setBuildingYieldChange(gc.getBuildingInfo(iBuilding1).getBuildingClassType(), YieldTypes.YIELD_FOOD, iFood)
+																	# pUnit.doCommand(CommandTypes.COMMAND_DELETE, -1, -1)
+																	pUnit.kill(True, -1)  # RAMK_CTD
+																	return True
 
-								# end: if pPlot.isCity
+													# Priority 2b - Manufaktur
+													# assign to manufactory
+													iBuilding1 = gc.getInfoTypeForString('BUILDING_CORP3')
+													if pCity.isHasBuilding(iBuilding1):
+															#iFood = pCity.getBuildingYieldChange(gc.getBuildingInfo(iBuilding1).getBuildingClassType(), YieldTypes.YIELD_FOOD)
+															iProd = pCity.getBuildingYieldChange(gc.getBuildingInfo(iBuilding1).getBuildingClassType(), YieldTypes.YIELD_PRODUCTION)
+															if iProd < 5:  # and iProd <= iFood:
+																	iProd += 1
+																	pCity.setBuildingYieldChange(gc.getBuildingInfo(iBuilding1).getBuildingClassType(), YieldTypes.YIELD_PRODUCTION, iProd)
+																	# pUnit.doCommand(CommandTypes.COMMAND_DELETE, -1, -1)
+																	pUnit.kill(True, -1)  # RAMK_CTD
+																	return True
+															# elif iFood < 5:
+															#    iFood += 1
+															#    pCity.setBuildingYieldChange(gc.getBuildingInfo(iBuilding1).getBuildingClassType(), YieldTypes.YIELD_FOOD, iFood)
+															#    # pUnit.doCommand(CommandTypes.COMMAND_DELETE, -1, -1)
+															#    pUnit.kill(True, -1)  # RAMK_CTD
+															#    return True
 
-								# Slave -> Villages (secondary)
-								LImpUpgrade = []
-								for i in L.LVillages:
-										if pOwner.getImprovementCount(i) > 0:
-												LImpUpgrade = L.LVillages
-												break
+													# Priority 3 - Bordell
+													# assign to the house of pleasure (bordell/freudenhaus)
+													if PAE_Sklaven.doSlave2Bordell(pCity, pUnit):
+															return True
 
-								# Slave -> Latifundium (primary)
-								if pTeam.isHasTech(gc.getInfoTypeForString("TECH_RESERVISTEN")):
-										for i in L.LLatifundien:
-												if pOwner.getImprovementCount(i) > 0:
-														LImpUpgrade = L.LLatifundien
-														break
+													# Priority 4 - Theater
+													# assign to the theatre
+													if PAE_Sklaven.doSlave2Theatre(pCity, pUnit):
+															return True
 
-								if LImpUpgrade:
-										for i in xrange(CyMap().numPlots()):
-												pLoopPlot = CyMap().sPlotByIndex(i)
-												if pLoopPlot.getOwner() == iOwner:
-														iImp = pLoopPlot.getImprovementType()
-														if iImp in LImpUpgrade:
-																if pLoopPlot.getUpgradeTimeLeft(iImp, iOwner) > 1:
-																		if iImp in L.LVillages:
-																				pLoopPlot.changeUpgradeProgress(10)
-																		else:
-																				PAE_Sklaven.doUpgradeLatifundium(pLoopPlot)
-																		pUnit.kill(True, -1)
-																		return True
+													# Priority 5 - Palace
+													# assign to the Palace  10%
+													if CvUtil.myRandom(10, "assign_slave_palace") == 1:
+															if PAE_Sklaven.doSlave2Palace(pCity, pUnit):
+																	return True
 
-						# Horses - create stables
-						elif iUnitType == gc.getInfoTypeForString("UNIT_HORSE"):
-								if pTeam.isHasTech(gc.getInfoTypeForString("TECH_PFERDEZUCHT")):
+													# Priority 6 - Temples
+													# assign to a temple 10%
+													if CvUtil.myRandom(10, "assign_slave_temple") == 1:
+															if PAE_Sklaven.doSlave2Temple(pCity, pUnit):
+																	return True
 
-										if self.doSpreadStrategicBonus_AI(pUnit, gc.getInfoTypeForString("BUILDING_STABLE"), gc.getInfoTypeForString("BONUS_HORSE")):
-												return True
+													# Priority 7 - Feuerwehr
+													# assign to the fire station 10%
+													if CvUtil.myRandom(10, "assign_slave_temple") == 1:
+															if PAE_Sklaven.doSlave2Feuerwehr(pCity, pUnit):
+																	return True
 
-										if pPlot.isCity() and pPlot.getOwner() == iOwner:
+													# Priority 8 - Sell slave 25%
+													if bSlaveMarket:
+															if CvUtil.myRandom(4, "ai_sell_slave") == 1:
+																	pUnit.getGroup().pushMission(MissionTypes.MISSION_TRADE, 0, 0, 0, False, False, MissionAITypes.NO_MISSIONAI, pPlot, pUnit)
+																	return True
 
-												# Pferd verkaufen
-												if pUnit.getGroup().getLengthMissionQueue() == 0 and pOwner.getUnitClassCount(pUnit.getUnitClassType()) > 2:
-														pOwner.changeGold(25)
-														pUnit.kill(True, -1)
-														return True
+													# PAE AI City Instance
+													self.PAE_AI_Cities_Slaves.append(pCity.getID())
 
-										# auf zur naechsten Stadt
-										else:
-												pCity = PAE_Unit.getNearestCity(pUnit)
-												if pCity != None:
-														pUnit.getGroup().pushMission(MissionTypes.MISSION_MOVE_TO, pCity.getX(), pCity.getY(), 1, False, False, MissionAITypes.NO_MISSIONAI, pUnit.plot(), pUnit)
-														return True
+													# Sklaven sicherheitshalber in die Hauptstadt schicken
+													pCapital = pOwner.getCapitalCity()
+													if pCapital.getID() != -1 and pPlot.getArea() == pCapital.area().getID():
+															if pCapital is not None and not pCapital.isNone():
+																	if not pUnit.atPlot(pCapital.plot()):
+																			pUnit.getGroup().pushMoveToMission(pCapital.getX(), pCapital.getY())
+																			return True
 
-						# Auswanderer / Emigrant
-						elif iUnitType == gc.getInfoTypeForString("UNIT_EMIGRANT"):
+									# end: if pPlot.isCity
 
-								# Auswanderer sollen Gemeinden bauen
-								if pTeam.isHasTech(gc.getInfoTypeForString("TECH_HEILKUNDE")):
-										LImpUpgradePlot = None
-										iDistance = 999
-										for i in xrange(CyMap().numPlots()):
-												pLoopPlot = CyMap().sPlotByIndex(i)
-												if pLoopPlot.getOwner() == iOwner:
-														iImp = pLoopPlot.getImprovementType()
-														if iImp == gc.getInfoTypeForString("IMPROVEMENT_VILLAGE"):
-														
-																iDistanceCheck = CyMap().calculatePathDistance(pUnit.plot(), pLoopPlot)
-																if iDistanceCheck != -1 and iDistanceCheck < iDistance:
-																		iDistance = iDistanceCheck
-																		LImpUpgradePlot = pLoopPlot
+									# Slave -> Villages (secondary)
+									LImpUpgrade = []
+									for i in L.LVillages:
+											if pOwner.getImprovementCount(i) > 0:
+													LImpUpgrade = L.LVillages
+													break
 
-										if LImpUpgradePlot != None:
-												if LImpUpgradePlot.getX() == pUnit.getX() and LImpUpgradePlot.getY() == pUnit.getY():
-														LImpUpgradePlot.setImprovementType(gc.getInfoTypeForString("IMPROVEMENT_TOWN"))
-														pUnit.kill(True, -1)
-														return True
-												else:
-														pUnit.getGroup().pushMission(MissionTypes.MISSION_MOVE_TO, LImpUpgradePlot.getX(), LImpUpgradePlot.getY(), 1, False, False, MissionAITypes.NO_MISSIONAI, pUnit.plot(), pUnit)
+									# Slave -> Latifundium (primary)
+									if pTeam.isHasTech(gc.getInfoTypeForString("TECH_RESERVISTEN")):
+											for i in L.LLatifundien:
+													if pOwner.getImprovementCount(i) > 0:
+															LImpUpgrade = L.LLatifundien
+															break
 
-								# zu schwachen Staedten
-								if pPlot.isCity() and pPlot.getOwner() == iOwner:
+									if LImpUpgrade:
+											for i in xrange(CyMap().numPlots()):
+													pLoopPlot = CyMap().sPlotByIndex(i)
+													if pLoopPlot.getOwner() == iOwner:
+															iImp = pLoopPlot.getImprovementType()
+															if iImp in LImpUpgrade:
+																	if pLoopPlot.getUpgradeTimeLeft(iImp, iOwner) > 1:
+																			if iImp in L.LVillages:
+																					pLoopPlot.changeUpgradeProgress(10)
+																			else:
+																					PAE_Sklaven.doUpgradeLatifundium(pLoopPlot)
+																			pUnit.kill(True, -1)
+																			return True
 
-										lCityX = None
-										iCityPop = 0
-										for lCity in lCities:
-												iPop = lCity.getPopulation()
-												if lCityX is None or iPop < iCityPop:
-														iCityPop = iPop
-														lCityX = lCity
+							# Horses - create stables
+							elif iUnitType == gc.getInfoTypeForString("UNIT_HORSE"):
+									if pTeam.isHasTech(gc.getInfoTypeForString("TECH_PFERDEZUCHT")):
 
-										if lCityX:
-												if not pUnit.atPlot(lCityX.plot()) and pUnit.generatePath(lCityX.plot(), 0, False, None):  # generatePath returns True, if a path was found.
-														pUnit.getGroup().pushMoveToMission(lCityX.getX(), lCityX.getY())
-												else:
-														lCityX.changePopulation(1)
-														# pUnit.doCommand(CommandTypes.COMMAND_DELETE, -1, -1)
-														pUnit.kill(True, -1)  # RAMK_CTD
-												return True
+											if self.doSpreadStrategicBonus_AI(pUnit, gc.getInfoTypeForString("BUILDING_STABLE"), gc.getInfoTypeForString("BONUS_HORSE")):
+													return True
 
-						# Beutegold / Treasure / Goldkarren -> zur Hauptstadt oder zur naechst gelegenen Stadt (Insel)
-						elif iUnitType == gc.getInfoTypeForString("UNIT_GOLDKARREN"):
+											if pPlot.isCity() and pPlot.getOwner() == iOwner:
 
-								if pUnit.getGroup().getLengthMissionQueue() == 0:
+													# Pferd verkaufen
+													if pUnit.getGroup().getLengthMissionQueue() == 0 and pOwner.getUnitClassCount(pUnit.getUnitClassType()) > 2:
+															pOwner.changeGold(25)
+															pUnit.kill(True, -1)
+															return True
 
-										if pOwner.getNumCities() > 0:
+											# auf zur naechsten Stadt
+											else:
+													pCity = PAE_Unit.getNearestCity(pUnit)
+													if pCity != None:
+															pUnit.getGroup().pushMission(MissionTypes.MISSION_MOVE_TO, pCity.getX(), pCity.getY(), 1, False, False, MissionAITypes.NO_MISSIONAI, pUnit.plot(), pUnit)
+															return True
 
-												if pPlot.isCity():
-														pCity = pPlot.getPlotCity()
-														if pCity.isCapital() or pCity.isGovernmentCenter():
-																iGold = 50 + CvUtil.myRandom(50, "ai_beutegold")  # KI Bonus (HI: 10 + x)
-																pOwner.changeGold(iGold)
-																# pUnit.doCommand(CommandTypes.COMMAND_DELETE, -1, -1)
-																pUnit.kill(True, -1)  # RAMK_CTD
-																return True
-														else:
-																bAccess = PAE_Unit.move2GovCenter(pUnit)
-																# bAccess = true: wenn eine Stadt angepeilt wurde
-																# bAccess = false: wenn die Einheit in einer Stadt steht aber der Weg abgeschnitten ist bzw nicht möglich ist
-																if not bAccess:
-																		# 1:20, dass das Gold auch ohne Hauptstadt/Provinzhauptstadt in die Kassa kommt
-																		if CvUtil.myRandom(20, "do_ai_beutegold") == 1:
-																				iGold = 50 + CvUtil.myRandom(30, "ai_beutegold")  # KI Bonus dafür weniger als oben
-																				pOwner.changeGold(iGold)
-																				# pUnit.doCommand(CommandTypes.COMMAND_DELETE, -1, -1)
-																				pUnit.kill(True, -1)  # RAMK_CTD
-																				return True
-												else:
-														PAE_Unit.move2GovCenter(pUnit)
-														#pCity = PAE_Unit.getNearestCity(pUnit)
-														# if pCity != None:
-														#    pUnit.getGroup().pushMoveToMission(pCity.getX(), pCity.getY())
+							# Auswanderer / Emigrant
+							elif iUnitType == gc.getInfoTypeForString("UNIT_EMIGRANT"):
 
-								return False
+									# Auswanderer sollen Gemeinden bauen
+									if pTeam.isHasTech(gc.getInfoTypeForString("TECH_HEILKUNDE")):
+											LImpUpgradePlot = None
+											iDistance = 999
+											for i in xrange(CyMap().numPlots()):
+													pLoopPlot = CyMap().sPlotByIndex(i)
+													if pLoopPlot.getOwner() == iOwner:
+															iImp = pLoopPlot.getImprovementType()
+															if iImp == gc.getInfoTypeForString("IMPROVEMENT_VILLAGE"):
+															
+																	iDistanceCheck = CyMap().calculatePathDistance(pUnit.plot(), pLoopPlot)
+																	if iDistanceCheck != -1 and iDistanceCheck < iDistance:
+																			iDistance = iDistanceCheck
+																			LImpUpgradePlot = pLoopPlot
 
-						# Trojanisches Pferd
-						elif iUnitType == gc.getInfoTypeForString("UNIT_TROJAN_HORSE"):
-								# 1: wenn das pferd in der naehe einer feindlichen stadt ist und diese ueber 100% defense hat -> anwenden
+											if LImpUpgradePlot != None:
+													if LImpUpgradePlot.getX() == pUnit.getX() and LImpUpgradePlot.getY() == pUnit.getY():
+															LImpUpgradePlot.setImprovementType(gc.getInfoTypeForString("IMPROVEMENT_TOWN"))
+															pUnit.kill(True, -1)
+															return True
+													else:
+															pUnit.getGroup().pushMission(MissionTypes.MISSION_MOVE_TO, LImpUpgradePlot.getX(), LImpUpgradePlot.getY(), 1, False, False, MissionAITypes.NO_MISSIONAI, pUnit.plot(), pUnit)
 
-								iX = pUnit.getX()
-								iY = pUnit.getY()
+									# zu schwachen Staedten
+									if pPlot.isCity() and pPlot.getOwner() == iOwner:
 
-								for iI in range(DirectionTypes.NUM_DIRECTION_TYPES):
-										loopPlot = plotDirection(iX, iY, DirectionTypes(iI))
-										if loopPlot is not None and not loopPlot.isNone():
-												if loopPlot.isCity():
-														loopCity = loopPlot.getPlotCity()
-														if loopCity.getOwner() != pUnit.getOwner():
-																if gc.getTeam(pUnit.getOwner()).isAtWar(gc.getPlayer(loopCity.getOwner()).getTeam()):
-																		iDamage = loopCity.getDefenseModifier(0)
-																		if iDamage > 100:
-																				loopCity.changeDefenseDamage(iDamage)
-																				# pUnit.doCommand(CommandTypes.COMMAND_DELETE, -1, -1)
-																				pUnit.kill(True, -1)  # RAMK_CTD
-																				return True
+											lCityX = None
+											iCityPop = 0
+											for lCity in lCities:
+													iPop = lCity.getPopulation()
+													if lCityX is None or iPop < iCityPop:
+															iCityPop = iPop
+															lCityX = lCity
 
-						# Gladiator und Gladiatorenschule
-						elif iUnitType == gc.getInfoTypeForString("UNIT_GLADIATOR") and not pUnit.isHasPromotion(gc.getInfoTypeForString("PROMOTION_MERCENARY")):
-								# nur wenn die Einheit im eigenen Terrain ist (und nicht im Kriegsgebiet)
-								if pPlot.getOwner() == iOwner:
-										if not pTeam.isHasTech(gc.getInfoTypeForString("TECH_KONZIL5")) and pTeam.isHasTech(gc.getInfoTypeForString("TECH_GLADIATOR2")):
-												iBuilding1 = gc.getInfoTypeForString("BUILDING_STADT")
-												iBuilding2 = gc.getInfoTypeForString("BUILDING_GLADIATORENSCHULE")
-												(loopCity, pIter) = pOwner.firstCity(False)
-												while loopCity:
-														if not loopCity.isNone():
-																if loopCity.isHasBuilding(iBuilding1) and not loopCity.isHasBuilding(iBuilding2):
-																		loopCity.setNumRealBuilding(iBuilding2, 1)
-																		pUnit.kill(True, -1)
-																		return True
-														(loopCity, pIter) = pOwner.nextCity(pIter, False)
-						# -----------------
+											if lCityX:
+													if not pUnit.atPlot(lCityX.plot()) and pUnit.generatePath(lCityX.plot(), 0, False, None):  # generatePath returns True, if a path was found.
+															pUnit.getGroup().pushMoveToMission(lCityX.getX(), lCityX.getY())
+													else:
+															lCityX.changePopulation(1)
+															# pUnit.doCommand(CommandTypes.COMMAND_DELETE, -1, -1)
+															pUnit.kill(True, -1)  # RAMK_CTD
+													return True
 
-						# Legend can become a Great General
-						if pUnit.isHasPromotion(gc.getInfoTypeForString("PROMOTION_COMBAT6")):
-								if not pUnit.isHasPromotion(gc.getInfoTypeForString("PROMOTION_LEADER")):
-										if pPlot.getOwner() == iOwner:
-												CvUtil.spawnUnit(gc.getInfoTypeForString("UNIT_GREAT_GENERAL"), pUnit.plot(), pOwner)
-												lPromos = [
-														gc.getInfoTypeForString("PROMOTION_COMBAT6"),
-														gc.getInfoTypeForString("PROMOTION_COMBAT5"),
-														gc.getInfoTypeForString("PROMOTION_COMBAT4"),
-														gc.getInfoTypeForString("PROMOTION_COMBAT3"),
-														gc.getInfoTypeForString("PROMOTION_COMBAT2"),
-														gc.getInfoTypeForString("PROMOTION_HERO")
-												]
-												for iPromo in lPromos:
-														if pUnit.isHasPromotion(iPromo):
-																pUnit.setHasPromotion(iPromo, False)
-												# Reduce XP
-												pUnit.setExperience(pUnit.getExperience() / 2, -1)
+							# Beutegold / Treasure / Goldkarren -> zur Hauptstadt oder zur naechst gelegenen Stadt (Insel)
+							elif iUnitType == gc.getInfoTypeForString("UNIT_GOLDKARREN"):
 
-												# if pUnit.getLevel() > 3:
-												#  pUnit.setLevel(pUnit.getLevel() - 3)
-												# else:
-												#  pUnit.setLevel(1)
-						# -----------------
+									if pUnit.getGroup().getLengthMissionQueue() == 0:
 
-						# Moral kann von Rhetorik Helden oder Leader vergeben werden
-						iPromo = gc.getInfoTypeForString("PROMOTION_RHETORIK")
-						if pUnit.isHasPromotion(iPromo):
-								# nur phasenweise machen
-								if CvUtil.myRandom(5, "AI_doChanceGiveMoralePromo") == 1:
-										PAE_Unit.doMoralUnits(pUnit, 1)
+											if pOwner.getNumCities() > 0:
 
-						# Druide soll Sklaven opfern
-						if iUnitType == gc.getInfoTypeForString("UNIT_DRUIDE"):
-								# Checken, ob es Einheiten ohne Moral gibt und ob sich ein Sklave auf dem Plot befindet
-								bSlaves = False
-								bMorale = False
-								iUnitSlave = gc.getInfoTypeForString("UNIT_SLAVE")
-								iPromo = gc.getInfoTypeForString("PROMOTION_MORALE")
+													if pPlot.isCity():
+															pCity = pPlot.getPlotCity()
+															if pCity.isCapital() or pCity.isGovernmentCenter():
+																	iGold = 50 + CvUtil.myRandom(50, "ai_beutegold")  # KI Bonus (HI: 10 + x)
+																	pOwner.changeGold(iGold)
+																	# pUnit.doCommand(CommandTypes.COMMAND_DELETE, -1, -1)
+																	pUnit.kill(True, -1)  # RAMK_CTD
+																	return True
+															else:
+																	bAccess = PAE_Unit.move2GovCenter(pUnit)
+																	# bAccess = true: wenn eine Stadt angepeilt wurde
+																	# bAccess = false: wenn die Einheit in einer Stadt steht aber der Weg abgeschnitten ist bzw nicht möglich ist
+																	if not bAccess:
+																			# 1:20, dass das Gold auch ohne Hauptstadt/Provinzhauptstadt in die Kassa kommt
+																			if CvUtil.myRandom(20, "do_ai_beutegold") == 1:
+																					iGold = 50 + CvUtil.myRandom(30, "ai_beutegold")  # KI Bonus dafür weniger als oben
+																					pOwner.changeGold(iGold)
+																					# pUnit.doCommand(CommandTypes.COMMAND_DELETE, -1, -1)
+																					pUnit.kill(True, -1)  # RAMK_CTD
+																					return True
+													else:
+															PAE_Unit.move2GovCenter(pUnit)
+															#pCity = PAE_Unit.getNearestCity(pUnit)
+															# if pCity != None:
+															#    pUnit.getGroup().pushMoveToMission(pCity.getX(), pCity.getY())
 
-								for iUnit in range(pPlot.getNumUnits()):
-										loopUnit = pPlot.getUnit(iUnit)
-										if loopUnit.getOwner() == iOwner:
-												if loopUnit.getUnitType() == iUnitSlave:
-														bSlaves = True
-												if loopUnit.isMilitaryHappiness():
-														if not loopUnit.isHasPromotion(iPromo):
-																if pUnit.getID() != loopUnit.getID():
-																		bMorale = True
+									return False
 
-										if bSlaves and bMorale:
-												PAE_Unit.doMoralUnits(pUnit, 2)
-												PAE_Unit.doKillSlaveFromPlot(pUnit)
-												pUnit.finishMoves()
-												return True
+							# Trojanisches Pferd
+							elif iUnitType == gc.getInfoTypeForString("UNIT_TROJAN_HORSE"):
+									# 1: wenn das pferd in der naehe einer feindlichen stadt ist und diese ueber 100% defense hat -> anwenden
 
-						# Kaufbare Promotions ------------------
+									iX = pUnit.getX()
+									iY = pUnit.getY()
 
-						# In einer Stadt
-						if pPlot.isCity():
-								pCity = pPlot.getPlotCity()
+									for iI in range(DirectionTypes.NUM_DIRECTION_TYPES):
+											loopPlot = plotDirection(iX, iY, DirectionTypes(iI))
+											if loopPlot is not None and not loopPlot.isNone():
+													if loopPlot.isCity():
+															loopCity = loopPlot.getPlotCity()
+															if loopCity.getOwner() != pUnit.getOwner():
+																	if gc.getTeam(pUnit.getOwner()).isAtWar(gc.getPlayer(loopCity.getOwner()).getTeam()):
+																			iDamage = loopCity.getDefenseModifier(0)
+																			if iDamage > 100:
+																					loopCity.changeDefenseDamage(iDamage)
+																					# pUnit.doCommand(CommandTypes.COMMAND_DELETE, -1, -1)
+																					pUnit.kill(True, -1)  # RAMK_CTD
+																					return True
 
-								# Kauf einer edlen Ruestung (Promotion)
-								if pTeam.isHasTech(gc.getInfoTypeForString("TECH_ARMOR")):
-										iPromo = gc.getInfoTypeForString("PROMOTION_EDLE_RUESTUNG")
-										iPromoPrereq = gc.getInfoTypeForString("PROMOTION_COMBAT5")
-										if not pUnit.isHasPromotion(iPromo) and pUnit.isHasPromotion(iPromoPrereq):
-												if pUnit.getUnitCombatType() not in L.LCombatNoRuestung:
-														# Removed 'is not None' check getUnitCombatType() never returns None
-														if pUnit.getUnitType() not in L.LUnitNoRuestung:
-																iBuilding = gc.getInfoTypeForString("BUILDING_FORGE_WEAPONS")
-																bonus1 = gc.getInfoTypeForString("BONUS_OREICHALKOS")
-																bonus2 = gc.getInfoTypeForString("BONUS_MESSING")
-																if pCity.isHasBuilding(iBuilding) and (pCity.hasBonus(bonus1) or pCity.hasBonus(bonus2)):
-																		iCost = gc.getUnitInfo(pUnit.getUnitType()).getCombat() * 12
-																		if iCost <= 0:
-																				iCost = 180
-																		if pOwner.getGold() > iCost * 3:
-																				# AI soll zu 25% die Ruestung kaufen
-																				if CvUtil.myRandom(4, "ai_ruestung") == 1:
-																						pOwner.changeGold(-iCost)
-																						pUnit.setHasPromotion(iPromo, True)
-																						pUnit.finishMoves()
-																						return True
+							# Gladiator und Gladiatorenschule
+							elif iUnitType == gc.getInfoTypeForString("UNIT_GLADIATOR") and not pUnit.isHasPromotion(gc.getInfoTypeForString("PROMOTION_MERCENARY")):
+									# nur wenn die Einheit im eigenen Terrain ist (und nicht im Kriegsgebiet)
+									if pPlot.getOwner() == iOwner:
+											if not pTeam.isHasTech(gc.getInfoTypeForString("TECH_KONZIL5")) and pTeam.isHasTech(gc.getInfoTypeForString("TECH_GLADIATOR2")):
+													iBuilding1 = gc.getInfoTypeForString("BUILDING_STADT")
+													iBuilding2 = gc.getInfoTypeForString("BUILDING_GLADIATORENSCHULE")
+													(loopCity, pIter) = pOwner.firstCity(False)
+													while loopCity:
+															if not loopCity.isNone():
+																	if loopCity.isHasBuilding(iBuilding1) and not loopCity.isHasBuilding(iBuilding2):
+																			loopCity.setNumRealBuilding(iBuilding2, 1)
+																			pUnit.kill(True, -1)
+																			return True
+															(loopCity, pIter) = pOwner.nextCity(pIter, False)
+							# -----------------
 
-								# Schiffe
-								if pUnit.getUnitCombatType() == gc.getInfoTypeForString("UNITCOMBAT_NAVAL"):
-										# Kauf eines Wellen-Oils (Promotion)
-										if pTeam.isHasTech(gc.getInfoTypeForString("TECH_KUESTE")):
-												bonus1 = gc.getInfoTypeForString("BONUS_OLIVES")
-												iPromo = gc.getInfoTypeForString("PROMOTION_OIL_ON_WATER")
-												iPromo2 = gc.getInfoTypeForString("PROMOTION_COMBAT2")
+							# Legend can become a Great General
+							if pUnit.isHasPromotion(gc.getInfoTypeForString("PROMOTION_COMBAT6")):
+									if not pUnit.isHasPromotion(gc.getInfoTypeForString("PROMOTION_LEADER")):
+											if pPlot.getOwner() == iOwner:
+													CvUtil.spawnUnit(gc.getInfoTypeForString("UNIT_GREAT_GENERAL"), pUnit.plot(), pOwner)
+													lPromos = [
+															gc.getInfoTypeForString("PROMOTION_COMBAT6"),
+															gc.getInfoTypeForString("PROMOTION_COMBAT5"),
+															gc.getInfoTypeForString("PROMOTION_COMBAT4"),
+															gc.getInfoTypeForString("PROMOTION_COMBAT3"),
+															gc.getInfoTypeForString("PROMOTION_COMBAT2"),
+															gc.getInfoTypeForString("PROMOTION_HERO")
+													]
+													for iPromo in lPromos:
+															if pUnit.isHasPromotion(iPromo):
+																	pUnit.setHasPromotion(iPromo, False)
+													# Reduce XP
+													pUnit.setExperience(pUnit.getExperience() / 2, -1)
 
-												if not pUnit.isHasPromotion(iPromo) and pUnit.isHasPromotion(iPromo2) and pCity.hasBonus(bonus1):
-														iCost = int(PyInfo.UnitInfo(pUnit.getUnitType()).getProductionCost() / 2)
-														if iCost <= 0:
-																iCost = 80
-														if pOwner.getGold() > iCost:
-																pOwner.changeGold(-iCost)
-																pUnit.setHasPromotion(iPromo, True)
-																pUnit.finishMoves()
-																return True
-										# Mit Magnetkompass ausrüsten (Promotion)
-										if pTeam.isHasTech(gc.getInfoTypeForString("TECH_MAGNETISM")):
-												bonus1 = gc.getInfoTypeForString("BONUS_MAGNETIT")
-												iPromo = gc.getInfoTypeForString("PROMOTION_KOMPASS")
+													# if pUnit.getLevel() > 3:
+													#  pUnit.setLevel(pUnit.getLevel() - 3)
+													# else:
+													#  pUnit.setLevel(1)
+							# -----------------
 
-												if not pUnit.isHasPromotion(iPromo) and pCity.hasBonus(bonus1):
-														iCost = 20
-														if pOwner.getGold() > iCost:
-																pOwner.changeGold(-iCost)
-																pUnit.setHasPromotion(iPromo, True)
-																pUnit.finishMoves()
-																return True
-										# Schiff reparieren
-										if pCity.isHasBuilding(gc.getInfoTypeForString("BUILDING_WERFT")):
-												iCost = pUnit.getDamage()
-												if pOwner.getGold() > iCost + 200:
-														if CvUtil.myRandom(2, "AI_Ship_Repair") == 1:
-																pOwner.changeGold(-iCost)
-																pUnit.setDamage(0, -1)
-																pUnit.finishMoves()
-																return True
+							# Moral kann von Rhetorik Helden oder Leader vergeben werden
+							iPromo = gc.getInfoTypeForString("PROMOTION_RHETORIK")
+							if pUnit.isHasPromotion(iPromo):
+									# nur phasenweise machen
+									if CvUtil.myRandom(5, "AI_doChanceGiveMoralePromo") == 1:
+											PAE_Unit.doMoralUnits(pUnit, 1)
 
-								# Bless units (PAE V Patch 4)
-								if pUnit.isMilitaryHappiness():
-										iCost = 50  # 50% for HI
-										if pOwner.getGold() > iCost:
-												iPromo = gc.getInfoTypeForString("PROMOTION_BLESSED")
-												if not pUnit.isHasPromotion(iPromo):
-														iBuilding1 = gc.getInfoTypeForString("BUILDING_CHRISTIAN_CATHEDRAL")
-														iBuilding2 = gc.getInfoTypeForString("BUILDING_HAGIA_SOPHIA")
-														if pCity.isHasBuilding(iBuilding1) or pCity.isHasBuilding(iBuilding2):
-																pOwner.changeGold(-iCost)
-																pUnit.setHasPromotion(iPromo, True)
-																pUnit.finishMoves()
-																return True
+							# Druide soll Sklaven opfern
+							if iUnitType == gc.getInfoTypeForString("UNIT_DRUIDE"):
+									# Checken, ob es Einheiten ohne Moral gibt und ob sich ein Sklave auf dem Plot befindet
+									bSlaves = False
+									bMorale = False
+									iUnitSlave = gc.getInfoTypeForString("UNIT_SLAVE")
+									iPromo = gc.getInfoTypeForString("PROMOTION_MORALE")
 
-								# Escorte
-								if iUnitType in L.LTradeUnits and pUnit.getDomainType() == DomainTypes.DOMAIN_LAND:
-										iPromo == gc.getInfoTypeForString("PROMOTION_SCHUTZ")
-										if not pUnit.isHasPromotion(iPromo):
-												iCost = 20
-												if pOwner.isCivic(gc.getInfoTypeForString("CIVIC_SOELDNERTUM")):
-														iCost = 15
-												if pOwner.getGold() > iCost:
-														pUnit.setHasPromotion(iPromo, True)
-														pUnit.finishMoves()
-														return True
+									for iUnit in range(pPlot.getNumUnits()):
+											loopUnit = pPlot.getUnit(iUnit)
+											if loopUnit.getOwner() == iOwner:
+													if loopUnit.getUnitType() == iUnitSlave:
+															bSlaves = True
+													if loopUnit.isMilitaryHappiness():
+															if not loopUnit.isHasPromotion(iPromo):
+																	if pUnit.getID() != loopUnit.getID():
+																			bMorale = True
 
-								# General oder Rhetoriker
-								if pUnit.isHasPromotion(gc.getInfoTypeForString("PROMOTION_RHETORIK")) or pUnit.isHasPromotion(gc.getInfoTypeForString("PROMOTION_LEADER")):
-										if pCity.getOccupationTimer() > 0:
-												pCity.setOccupationTimer(0)
-										elif pCity.isHasBuilding(gc.getInfoTypeForString("BUILDING_CIVIL_WAR")):
-												pCity.setNumRealBuilding(gc.getInfoTypeForString("BUILDING_CIVIL_WAR"), 0)
+											if bSlaves and bMorale:
+													PAE_Unit.doMoralUnits(pUnit, 2)
+													PAE_Unit.doKillSlaveFromPlot(pUnit)
+													pUnit.finishMoves()
+													return True
 
-						# in einer Stadt
-						else:
-								# ausserhalb einer Stadt
+							# Kaufbare Promotions ------------------
 
-								# LEADER
-								if pUnit.isHasPromotion(gc.getInfoTypeForString("PROMOTION_LEADER")):
-										# Wald niederbrennen
-										if pPlot.getFeatureType() in L.LForests:
-												if gc.getTeam(pPlot.getOwner()).isAtWar(pUnit.getTeam()):
-														if CvUtil.myRandom(4, "AI_Leader_BurnDownTheForest") == 1:
-																PAE_Unit.doBurnDownForest(pUnit)
-																return True
+							# In einer Stadt
+							if pPlot.isCity():
+									pCity = pPlot.getPlotCity()
+
+									# Kauf einer edlen Ruestung (Promotion)
+									if pTeam.isHasTech(gc.getInfoTypeForString("TECH_ARMOR")):
+											iPromo = gc.getInfoTypeForString("PROMOTION_EDLE_RUESTUNG")
+											iPromoPrereq = gc.getInfoTypeForString("PROMOTION_COMBAT5")
+											if not pUnit.isHasPromotion(iPromo) and pUnit.isHasPromotion(iPromoPrereq):
+													if pUnit.getUnitCombatType() not in L.LCombatNoRuestung:
+															# Removed 'is not None' check getUnitCombatType() never returns None
+															if pUnit.getUnitType() not in L.LUnitNoRuestung:
+																	iBuilding = gc.getInfoTypeForString("BUILDING_FORGE_WEAPONS")
+																	bonus1 = gc.getInfoTypeForString("BONUS_OREICHALKOS")
+																	bonus2 = gc.getInfoTypeForString("BONUS_MESSING")
+																	if pCity.isHasBuilding(iBuilding) and (pCity.hasBonus(bonus1) or pCity.hasBonus(bonus2)):
+																			iCost = gc.getUnitInfo(pUnit.getUnitType()).getCombat() * 12
+																			if iCost <= 0:
+																					iCost = 180
+																			if pOwner.getGold() > iCost * 3:
+																					# AI soll zu 25% die Ruestung kaufen
+																					if CvUtil.myRandom(4, "ai_ruestung") == 1:
+																							pOwner.changeGold(-iCost)
+																							pUnit.setHasPromotion(iPromo, True)
+																							pUnit.finishMoves()
+																							return True
+
+									# Schiffe
+									if pUnit.getUnitCombatType() == gc.getInfoTypeForString("UNITCOMBAT_NAVAL"):
+											# Kauf eines Wellen-Oils (Promotion)
+											if pTeam.isHasTech(gc.getInfoTypeForString("TECH_KUESTE")):
+													bonus1 = gc.getInfoTypeForString("BONUS_OLIVES")
+													iPromo = gc.getInfoTypeForString("PROMOTION_OIL_ON_WATER")
+													iPromo2 = gc.getInfoTypeForString("PROMOTION_COMBAT2")
+
+													if not pUnit.isHasPromotion(iPromo) and pUnit.isHasPromotion(iPromo2) and pCity.hasBonus(bonus1):
+															iCost = int(PyInfo.UnitInfo(pUnit.getUnitType()).getProductionCost() / 2)
+															if iCost <= 0:
+																	iCost = 80
+															if pOwner.getGold() > iCost:
+																	pOwner.changeGold(-iCost)
+																	pUnit.setHasPromotion(iPromo, True)
+																	pUnit.finishMoves()
+																	return True
+											# Mit Magnetkompass ausrüsten (Promotion)
+											if pTeam.isHasTech(gc.getInfoTypeForString("TECH_MAGNETISM")):
+													bonus1 = gc.getInfoTypeForString("BONUS_MAGNETIT")
+													iPromo = gc.getInfoTypeForString("PROMOTION_KOMPASS")
+
+													if not pUnit.isHasPromotion(iPromo) and pCity.hasBonus(bonus1):
+															iCost = 20
+															if pOwner.getGold() > iCost:
+																	pOwner.changeGold(-iCost)
+																	pUnit.setHasPromotion(iPromo, True)
+																	pUnit.finishMoves()
+																	return True
+											# Schiff reparieren
+											if pCity.isHasBuilding(gc.getInfoTypeForString("BUILDING_WERFT")):
+													iCost = pUnit.getDamage()
+													if pOwner.getGold() > iCost + 200:
+															if CvUtil.myRandom(2, "AI_Ship_Repair") == 1:
+																	pOwner.changeGold(-iCost)
+																	pUnit.setDamage(0, -1)
+																	pUnit.finishMoves()
+																	return True
+
+									# Bless units (PAE V Patch 4)
+									if pUnit.isMilitaryHappiness():
+											iCost = 50  # 50% for HI
+											if pOwner.getGold() > iCost:
+													iPromo = gc.getInfoTypeForString("PROMOTION_BLESSED")
+													if not pUnit.isHasPromotion(iPromo):
+															iBuilding1 = gc.getInfoTypeForString("BUILDING_CHRISTIAN_CATHEDRAL")
+															iBuilding2 = gc.getInfoTypeForString("BUILDING_HAGIA_SOPHIA")
+															if pCity.isHasBuilding(iBuilding1) or pCity.isHasBuilding(iBuilding2):
+																	pOwner.changeGold(-iCost)
+																	pUnit.setHasPromotion(iPromo, True)
+																	pUnit.finishMoves()
+																	return True
+
+									# Escorte
+									if iUnitType in L.LTradeUnits and pUnit.getDomainType() == DomainTypes.DOMAIN_LAND:
+											iPromo == gc.getInfoTypeForString("PROMOTION_SCHUTZ")
+											if not pUnit.isHasPromotion(iPromo):
+													iCost = 20
+													if pOwner.isCivic(gc.getInfoTypeForString("CIVIC_SOELDNERTUM")):
+															iCost = 15
+													if pOwner.getGold() > iCost:
+															pUnit.setHasPromotion(iPromo, True)
+															pUnit.finishMoves()
+															return True
+
+									# General oder Rhetoriker
+									if pUnit.isHasPromotion(gc.getInfoTypeForString("PROMOTION_RHETORIK")) or pUnit.isHasPromotion(gc.getInfoTypeForString("PROMOTION_LEADER")):
+											if pCity.getOccupationTimer() > 0:
+													pCity.setOccupationTimer(0)
+											elif pCity.isHasBuilding(gc.getInfoTypeForString("BUILDING_CIVIL_WAR")):
+													pCity.setNumRealBuilding(gc.getInfoTypeForString("BUILDING_CIVIL_WAR"), 0)
+
+							# in einer Stadt
+							else:
+									# ausserhalb einer Stadt
+
+									# LEADER
+									if pUnit.isHasPromotion(gc.getInfoTypeForString("PROMOTION_LEADER")):
+											# Wald niederbrennen
+											if pPlot.getFeatureType() in L.LForests:
+													if gc.getTeam(pPlot.getOwner()).isAtWar(pUnit.getTeam()):
+															if CvUtil.myRandom(4, "AI_Leader_BurnDownTheForest") == 1:
+																	PAE_Unit.doBurnDownForest(pUnit)
+																	return True
 
 
-						# Governor / Statthalter
-						# if pUnit.getUnitClassType() == gc.getInfoTypeForString("UNITCLASS_STATTHALTER"):
-						#    PAE_Unit.doStatthalterTurn_AI(pUnit)
-						#    return True
-
+							# Governor / Statthalter
+							# if pUnit.getUnitClassType() == gc.getInfoTypeForString("UNITCLASS_STATTHALTER"):
+							#    PAE_Unit.doStatthalterTurn_AI(pUnit)
+							#    return True
+				except:
+					CyInterface().addMessage(gc.getGame().getActivePlayer(), True, 10, "Fehler allgemein in AI_unitUpdate", None, 2, None, ColorTypes(10), 0, 0, False, False)
+				CvUtil.myRandom(10, "Ende AI_unitUpdate")
 				return False
 
 		def AI_doWar(self, argsList):

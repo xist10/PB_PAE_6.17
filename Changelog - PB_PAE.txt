@@ -11,3 +11,4 @@ v25 Verschiedene Pythonkorrekturen - Umwandlung der Kreise bei Handelskarren
 --------
 v26 Einbau der Pythonänderungen von PAE_PB_7 - Zurück der Listen, 2 kleine Fehlerbehandlungen; Belobigung
 v28 Entfernen von Debugpythondateien
+v29 Lösen von Probleme im PB Betrieb
