@@ -18,4 +18,10 @@
 		<DefineName>RIVER_TERRAIN</DefineName>
 		<DefineTextVal>TERRAIN_RIVER</DefineTextVal>
 	</Define>
+	<!--Ramk for PB Mod -->	
+	<Define>
+		<DefineName>CORPORATION_PBMOD_MINIMAL_FACTOR</DefineName>
+		<iDefineIntVal>100</iDefineIntVal>
+    		<!-- 100 percent means disabling of feature  -->
+	</Define>	
 </Civ4Defines>

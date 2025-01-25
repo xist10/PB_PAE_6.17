@@ -1,2 +1,0 @@
-Belobigungen - Auf Rob Warten und einbauen
-v17.2 vergleichen - CvMainInterface.py

@@ -1102,7 +1102,7 @@ def canDoFormation(pUnit, iFormation):
 				# Fourage
 				if iFormation == gc.getInfoTypeForString("PROMOTION_FORM_FOURAGE"):
 						if pTeam.isHasTech(gc.getInfoTypeForString("TECH_BRANDSCHATZEN")):
-								if iUnitType not in L.LUnitWarAnimals:
+								if iUnitType not in L.LUnitWarAnimals and iUnitType not in L.LUnitNoSlaves:
 										return True
 
 				# Partherschuss oder Kantabrischer Kreis
@@ -2337,7 +2337,7 @@ def doRankPromo(pWinner):
 										if "_TRAIT_" in iPromoType:
 												break
 										if "_RANG_ROM_EQUES" in iPromoType:
-												if pWinner.isHasPromotion(iPromo):
+												if pWinner.isHasPromotion(iPromo) and iNewPromo != -1:
 														#if iPromo == gc.getInfoTypeForString("PROMOTION_RANG_ROM_EQUES_3"):
 														if canUpgradeUnit(pWinner) != -1:
 																CvUtil.addScriptData(pWinner, "P", "RangPromoUp")

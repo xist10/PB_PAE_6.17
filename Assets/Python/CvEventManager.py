@@ -617,7 +617,7 @@ class CvEventManager:
 								CvUtil.pyPrint("Chat message decoding failed. Error: %s" % (e,))
 
 
-				# iData1 = iMessageID (!)
+				# iData1 = iMessageID (!)S
 
 				# Inquisitor
 				if iData1 == 665:

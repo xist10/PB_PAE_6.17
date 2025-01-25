@@ -223,8 +223,11 @@ def doBuildTradeRoad(pUnit, pCity):
 		#CyInterface().addMessage(gc.getGame().getActivePlayer(), True, 10, "Trade Route (iRand:iChance): " + str(iRand) + " : " + str(iChance) + " | " + pSeller.getName(), None, 2, None, ColorTypes(8), 0, 0, False, False)
 		#iChance = 100
 		if iRand <= iChance:
+				LTradeRoads = [
+						gc.getInfoTypeForString("ROUTE_TRADE_ROAD"),
+						gc.getInfoTypeForString("ROUTE_RAILROAD") # Roman Road
+				]
 				iRouteType = gc.getInfoTypeForString("ROUTE_TRADE_ROAD")
-				iRouteType2 = gc.getInfoTypeForString("ROUTE_ROUTE_RAILROAD")  # Roman Road
 				pCity2 = None
 
 				# Schiffe: Hafenstadt -> Hauptstadt
@@ -253,7 +256,7 @@ def doBuildTradeRoad(pUnit, pCity):
 						if pSource.isCity():
 								#CyInterface().addMessage(iSeller, True, 10, "Vor Traderoute", None, 2, None, ColorTypes(8), pUnit.getX(), pUnit.getY(), False, False)
 								pPlotTradeRoad = getPlotTradingRoad(pSource, pDest)
-								if pCity2 == None:
+								if pCity2 is None:
 										pCity2 = pSource.getPlotCity()
 
 								# Debug
@@ -264,7 +267,7 @@ def doBuildTradeRoad(pUnit, pCity):
 								#		CyInterface().addMessage(gc.getGame().getActivePlayer(), True, 10, sz, None, 2, "Art/Terrain/Routes/handelsstrasse/button_handelsstrasse.dds", ColorTypes(10), pPlotTradeRoad.getX(), pPlotTradeRoad.getY(), True, True)
 								#CyInterface().addMessage(iSeller, True, 10, "Nach Traderoute", None, 2, None, ColorTypes(8), pUnit.getX(), pUnit.getY(), False, False)
 
-								if pPlotTradeRoad != None:
+								if pPlotTradeRoad is not None:
 										pPlotTradeRoad.setRouteType(iRouteType)
 										if pBuyer.isHuman():
 												sMessage = CyTranslator().getText("TXT_KEY_TRADE_ROUTE_BUILT", (pSeller.getName(), pSeller.getCivilizationShortDescriptionKey(), pCity.getName(), pCity2.getName()))
@@ -287,13 +290,14 @@ def doBuildTradeRoad(pUnit, pCity):
 						iMax = 3
 						if pCity.isCoastal(4):
 								iMax = 2
-						for i in range(8):
+						for i in range(DirectionTypes.NUM_DIRECTION_TYPES):
 								pLoopPlot = plotDirection(pCity.getX(), pCity.getY(), DirectionTypes(i))
 								if pLoopPlot is not None and not pLoopPlot.isNone():
-										if pLoopPlot.getRouteType() == iRouteType or pLoopPlot.getRouteType() == iRouteType2:
+										if pLoopPlot.getRouteType() in LTradeRoads:
 												iAnz += 1
 										if iAnz >= iMax:
 												break
+
 						if iAnz >= iMax:
 								pCity.setNumRealBuilding(iBuilding, 1)
 								if pCity.getOwner() == gc.getGame().getActivePlayer():
@@ -324,10 +328,10 @@ def getPlotTradingRoad(pSource, pDest):
 
 				# wenn pSource = pTarget (Haendler ueber Schiff im Hafen)
 				if iSourceX != iDestX or iSourceY != iDestY:
-						# ROUTE_ROUTE_RAILROAD = Roman Road
+						# ROUTE_RAILROAD = Roman Road
 						LTradeRoads = [
 								gc.getInfoTypeForString("ROUTE_TRADE_ROAD"),
-								gc.getInfoTypeForString("ROUTE_ROUTE_RAILROAD")
+								gc.getInfoTypeForString("ROUTE_RAILROAD")
 						]
 						bSourceGerade = False
 						bNewRoute = False
@@ -357,7 +361,7 @@ def getPlotTradingRoad(pSource, pDest):
 										#CyInterface().addMessage(gc.getGame().getActivePlayer(), True, 10, sz, None, 2, "", ColorTypes(10), 0, 0, 0, 0)
 
 										loopPlot = gc.getMap().plot(iX, iY)
-										if not loopPlot.isNone():
+										if loopPlot and not loopPlot.isNone():
 												if not loopPlot.isPeak() and not loopPlot.isWater():
 
 														# gibt es bereits eine Strasse an der Y-Achse dieses Bereichs?
@@ -390,21 +394,15 @@ def getPlotTradingRoad(pSource, pDest):
 						# wenn es noch keine Strasse in der Stadt gibt => egal
 						# wenn es eine Strasse gibt, dann den Umkreis checken
 						if pSource.getRouteType() in LTradeRoads or bNewRoute:
-								iBest = 0
-								for i in range(3):
-										for j in range(3):
-												if i != 1 and j != 1:
-														loopPlot = gc.getMap().plot(iSourceX + i - 1, iSourceY + j - 1)
-														if not loopPlot.isNone():
-																if loopPlot.getRouteType() in LTradeRoads:
-																		iTmp = gc.getMap().calculatePathDistance(loopPlot, pDest)
-																		if iBest == 0:
-																				iBest = iTmp
-
-																		if iTmp == iBest and (i == 1 or j == 1):
-																				bSourceGerade = True
-																		elif iTmp < iBest:
-																				bSourceGerade = (i == 1 or j == 1)
+								iBest = -1
+								for iI in range(DirectionTypes.NUM_DIRECTION_TYPES):
+										loopPlot = plotDirection(iSourceX, iSourceY, DirectionTypes(iI))
+										if loopPlot and not loopPlot.isNone():
+														if loopPlot.getRouteType() in LTradeRoads:
+																iTmp = gc.getMap().calculatePathDistance(loopPlot, pDest)
+																if (iBest == -1 or iTmp < iBest):
+																		iBest = iTmp
+																		bSourceGerade = (DirectionTypes(iI) in [DirectionTypes.DIRECTION_NORTH, DirectionTypes.DIRECTION_EAST, DirectionTypes.DIRECTION_SOUTH, DirectionTypes.DIRECTION_WEST])
 
 						# Den naechsten Plot fuer die Handelsstrasse herausfinden
 						iBestX = iDestX
@@ -413,13 +411,10 @@ def getPlotTradingRoad(pSource, pDest):
 						while iBestX != iSourceX or iBestY != iSourceY:
 								i = 0
 								j = 0
-								iBest = 0
-								for i in range(3):
-										for j in range(3):
-												iX = iBestX + i - 1
-												iY = iBestY + j - 1
-												loopPlot = gc.getMap().plot(iX, iY)
-												if not loopPlot.isNone():
+								iBest = -1
+								for iI in range(DirectionTypes.NUM_DIRECTION_TYPES):
+										loopPlot = plotDirection(iBestX, iBestY, DirectionTypes(iI))
+										if loopPlot and not loopPlot.isNone():
 														if not loopPlot.isPeak() and not loopPlot.isWater():
 																# nur Plot mit Strasse zulassen
 																# if loopPlot.getRouteType() != -1:
@@ -440,12 +435,12 @@ def getPlotTradingRoad(pSource, pDest):
 																				return None
 																		return loopPlot
 
-																if iBest == 0 or iTmp < iBest:
-																		iBest = iTmp
-																		pBest = loopPlot
-																		p = [loopPlot, None, None]
-																		if loopPlot.isHills():
-																				h[0] = 1
+																if iBest == -1 or iTmp < iBest:
+																				iBest = iTmp
+																				pBest = loopPlot
+																				p = [loopPlot, None, None]
+																				if loopPlot.isHills():
+																						h[0] = 1
 																elif iTmp == iBest:
 																		if p[1] == None:
 																				p[1] = loopPlot

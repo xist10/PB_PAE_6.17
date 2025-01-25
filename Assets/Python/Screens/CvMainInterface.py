@@ -2279,10 +2279,20 @@ class CvMainInterface:
 																				screen.enableMultiListPulse("BottomButtonContainer", True, 0, iCount)
 																				iCount += 1
 
+																# PAE 6.9 GREEKS and Perioikian hoplite (SPARTA)
+																if iCivType in L.LGreeks or iCivType == gc.getInfoTypeForString("CIVILIZATION_SPARTA"):
+																		# experienced hoplite -> Kalos Kagathos (special hoplite)
+																		if pUnit.isHasPromotion(gc.getInfoTypeForString("PROMOTION_COMBAT2")):
+																				if iUnitType == gc.getInfoTypeForString("UNIT_HOPLIT") or iUnitType == gc.getInfoTypeForString("UNIT_HOPLIT_SPARTA"):
+																						screen.appendMultiListButton("BottomButtonContainer", "Art/Interface/Buttons/Units/button_unit_hoplit_kalos.dds", 0,
+																																				 WidgetTypes.WIDGET_GENERAL, 705, gc.getInfoTypeForString("UNIT_HOPLIT_KALOS"), False)
+																						screen.show("BottomButtonContainer")
+																						screen.enableMultiListPulse("BottomButtonContainer", True, 0, iCount)
+																						iCount += 1
 
 																# Veterans
 																if pUnit.isHasPromotion(gc.getInfoTypeForString("PROMOTION_COMBAT4")):
-
+																		'''# Alter Code, wird in PAE 6.17.2 komplett ersetzt
 																		# LEGION zu Praetorians
 																		if iUnitType in L.LUnits4Praetorians:
 																				if not pTeam.isHasTech(gc.getInfoTypeForString("TECH_GRENZHEER")):
@@ -2293,7 +2303,353 @@ class CvMainInterface:
 																						iCount += 1
 
 																		# Rome: Roman Praetorians ->  Cohors Praetoria | Cohors Urbana | Equites LH gehen über XML
+																		'''
+																		# Eliteeinheiten
+																		if pUnit.isHasPromotion(gc.getInfoTypeForString("PROMOTION_COMBAT5")):
 
+																				if pUnit.getUnitCombatType() == gc.getInfoTypeForString("UNITCOMBAT_MOUNTED"):
+																						# Elite Cohors Equitata -> Equites Singulares Augusti
+																						if iUnitType == gc.getInfoTypeForString("UNIT_HORSEMAN_EQUITES2"):
+																								screen.appendMultiListButton("BottomButtonContainer", "Art/Interface/Buttons/Units/button_praetorian2_horse.dds", 0,
+																																						 WidgetTypes.WIDGET_GENERAL, 705, gc.getInfoTypeForString("UNIT_PRAETORIAN_RIDER"), False)
+																								screen.show("BottomButtonContainer")
+																								screen.enableMultiListPulse("BottomButtonContainer", True, 0, iCount)
+																								iCount += 1
+																						# Elite Palatini or Clibanari or Cataphracti -> Scholae
+																						elif (iUnitType == gc.getInfoTypeForString("UNIT_ROME_PALATINI") or
+																										iUnitType == gc.getInfoTypeForString("UNIT_CLIBANARII_ROME") or
+																										iUnitType == gc.getInfoTypeForString("UNIT_CATAPHRACT_ROME")):
+																								# if gc.getCivilizationInfo(pUnitOwner.getCivilizationType()).getCivilizationUnits(gc.getInfoTypeForString("UNITCLASS_ROME_SCHOLAE")) < 3:
+																								screen.appendMultiListButton("BottomButtonContainer", "Art/Interface/Buttons/Units/button_scholae.dds", 0,
+																																						 WidgetTypes.WIDGET_GENERAL, 705, gc.getInfoTypeForString("UNIT_ROME_SCHOLAE"), False)
+																								screen.show("BottomButtonContainer")
+																								screen.enableMultiListPulse("BottomButtonContainer", True, 0, iCount)
+																								iCount += 1
+																				else:
+																						# Elite Limitanei -> Imperial Guard
+																						if iUnitType == gc.getInfoTypeForString("UNIT_ROME_LIMITANEI"):
+																								screen.appendMultiListButton("BottomButtonContainer", "Art/Interface/Buttons/Units/button_unit_limit_garde.dds", 0,
+																																						 WidgetTypes.WIDGET_GENERAL, 705, gc.getInfoTypeForString("UNIT_ROME_LIMITANEI_GARDE"), False)
+																								screen.show("BottomButtonContainer")
+																								screen.enableMultiListPulse("BottomButtonContainer", True, 0, iCount)
+																								iCount += 1
+																						# Elite Comitatenses -> Palatini
+																						elif iUnitType == gc.getInfoTypeForString("UNIT_ROME_COMITATENSES") or iUnitType == gc.getInfoTypeForString("UNIT_ROME_COMITATENSES2"):
+																								screen.appendMultiListButton("BottomButtonContainer", "Art/Interface/Buttons/Units/button_palatini.dds", 0,
+																																						 WidgetTypes.WIDGET_GENERAL, 705, gc.getInfoTypeForString("UNIT_ROME_PALATINI"), False)
+																								screen.show("BottomButtonContainer")
+																								screen.enableMultiListPulse("BottomButtonContainer", True, 0, iCount)
+																								iCount += 1
+																						# Elite Cohorte praetoriae + Cohors urbana -> Praetorian Garde
+																						elif iUnitType == gc.getInfoTypeForString("UNIT_PRAETORIAN") or iUnitType == gc.getInfoTypeForString("UNIT_PRAETORIAN2") or iUnitType == gc.getInfoTypeForString("UNIT_ROME_COHORTES_URBANAE") or iUnitType == gc.getInfoTypeForString("UNIT_LEGION_EVOCAT"):
+																								screen.appendMultiListButton("BottomButtonContainer", "Art/Interface/Buttons/Units/button_praetorian3.dds", 0,
+																																						 WidgetTypes.WIDGET_GENERAL, 705, gc.getInfoTypeForString("UNIT_PRAETORIAN3"), False)
+																								screen.show("BottomButtonContainer")
+																								screen.enableMultiListPulse("BottomButtonContainer", True, 0, iCount)
+																								iCount += 1
+																						# Elite Assyrer und Babylon: Quradu
+																						elif iCivType == gc.getInfoTypeForString("CIVILIZATION_ASSYRIA") or iCivType == gc.getInfoTypeForString("CIVILIZATION_BABYLON"):
+																								if pTeam.isHasTech(gc.getInfoTypeForString("TECH_BUERGERSOLDATEN")):
+																										if iUnitType != gc.getInfoTypeForString("UNIT_ASSUR_RANG2") and iUnitType != gc.getInfoTypeForString("UNIT_ASSUR_RANG3") and gc.getUnitInfo(iUnitType).getCombat() < 11:
+																												screen.appendMultiListButton("BottomButtonContainer", gc.getUnitInfo(gc.getInfoTypeForString("UNIT_ELITE_ASSUR")
+																																																														 ).getButton(), 0, WidgetTypes.WIDGET_GENERAL, 705, gc.getInfoTypeForString("UNIT_ELITE_ASSUR"), False)
+																												screen.show("BottomButtonContainer")
+																												screen.enableMultiListPulse("BottomButtonContainer", True, 0, iCount)
+																												iCount += 1
+																						# Elite Sumerer: Gardu
+																						elif iCivType == gc.getInfoTypeForString("CIVILIZATION_SUMERIA"):
+																								if pTeam.isHasTech(gc.getInfoTypeForString("TECH_BUERGERSOLDATEN")):
+																										if gc.getUnitInfo(iUnitType).getCombat() < 11:
+																												screen.appendMultiListButton("BottomButtonContainer", gc.getUnitInfo(gc.getInfoTypeForString("UNIT_ELITE_SUMER")
+																																																														 ).getButton(), 0, WidgetTypes.WIDGET_GENERAL, 705, gc.getInfoTypeForString("UNIT_ELITE_SUMER"), False)
+																												screen.show("BottomButtonContainer")
+																												screen.enableMultiListPulse("BottomButtonContainer", True, 0, iCount)
+																												iCount += 1
+																						# Stammesfürst
+																						elif iCivType in L.LNorthern:
+																								# Stammesfuerst
+																								if pTeam.isHasTech(gc.getInfoTypeForString("TECH_KETTENPANZER")):
+																										# nur Nahkaempfer
+																										if pUnit.getUnitCombatType() in L.LMeleeCombats:
+																												screen.appendMultiListButton("BottomButtonContainer", "Art/Interface/Buttons/Units/button_unit_stammesfuerst.dds",
+																																										 0, WidgetTypes.WIDGET_GENERAL, 705, gc.getInfoTypeForString("UNIT_STAMMESFUERST"), False)
+																												screen.show("BottomButtonContainer")
+																												screen.enableMultiListPulse("BottomButtonContainer", True, 0, iCount)
+																												iCount += 1
+
+																		# weiter mit Veteran
+
+																		# ROME
+																		if (iCivType == gc.getInfoTypeForString("CIVILIZATION_ROME") or
+																				iCivType == gc.getInfoTypeForString("CIVILIZATION_ETRUSCANS")):
+
+																				if pUnit.getUnitCombatType() == gc.getInfoTypeForString("UNITCOMBAT_ARCHER"):
+
+																						# Sagittarii (Reflex) -> Arquites
+																						if iUnitType == gc.getInfoTypeForString("UNIT_ARCHER_ROME"):
+																								if pTeam.isHasTech(gc.getInfoTypeForString("TECH_LORICA_SEGMENTATA")):
+																										screen.appendMultiListButton("BottomButtonContainer", "Art/Interface/Buttons/Units/button_arquites_legionis.dds", 0,
+																																								 WidgetTypes.WIDGET_GENERAL, 705, gc.getInfoTypeForString("UNIT_ARCHER_LEGION"), False)
+																										screen.show("BottomButtonContainer")
+																										screen.enableMultiListPulse("BottomButtonContainer", True, 0, iCount)
+																										iCount += 1
+																						# Arquites -> Equites Sagittarii (Horse Archer)
+																						elif iUnitType == gc.getInfoTypeForString("UNIT_ARCHER_LEGION"):
+																								if pTeam.isHasTech(gc.getInfoTypeForString("TECH_HORSE_ARCHER")):
+																										screen.appendMultiListButton("BottomButtonContainer", ",Art/Interface/Buttons/Units/HorseArcher.dds,Art/Interface/Buttons/Warlords_Atlas_1.dds,1,11",
+																																								 0, WidgetTypes.WIDGET_GENERAL, 705, gc.getInfoTypeForString("UNIT_HORSE_ARCHER_ROMAN"), False)
+																										screen.show("BottomButtonContainer")
+																										screen.enableMultiListPulse("BottomButtonContainer", True, 0, iCount)
+																										iCount += 1
+
+																				else:
+
+																						# Legion -> Praetorians
+																						# Legionen ab Rang Immunes und Veteranstatus
+																						# Optio, Centurio und Tribun/Legat
+																						# obsolete with Marching Army/Border Army
+																						if not pTeam.isHasTech(gc.getInfoTypeForString("TECH_GRENZHEER")):
+																								if pTeam.isHasTech(gc.getInfoTypeForString("TECH_BERUFSSOLDATEN")):
+																										LegionUnits = [
+																												gc.getInfoTypeForString("UNIT_LEGION"),
+																												gc.getInfoTypeForString("UNIT_LEGION2")
+																										]
+																										LegionOfficerUnits = [
+																												gc.getInfoTypeForString("UNIT_LEGION_OPTIO"),
+																												gc.getInfoTypeForString("UNIT_LEGION_OPTIO2"),
+																												gc.getInfoTypeForString("UNIT_LEGION_CENTURIO"),
+																												gc.getInfoTypeForString("UNIT_LEGION_CENTURIO2"),
+																												gc.getInfoTypeForString("UNIT_LEGION_TRIBUN")
+																										]
+																										# Rang: Immunes
+																										if (iUnitType in LegionUnits and pUnit.isHasPromotion(gc.getInfoTypeForString("PROMOTION_RANG_ROM_3")) or 
+																												iUnitType in LegionOfficerUnits):
+																														if iUnitType == gc.getInfoTypeForString("UNIT_LEGION_TRIBUN"):
+																																iNewUnit = gc.getInfoTypeForString("UNIT_PRAETORIAN_RIDER")
+																														else:
+																																iNewUnit = gc.getInfoTypeForString("UNIT_PRAETORIAN")
+																														screen.appendMultiListButton("BottomButtonContainer", gc.getUnitInfo(iNewUnit).getButton(), 0, WidgetTypes.WIDGET_GENERAL, 705, iNewUnit, False)
+																														screen.show("BottomButtonContainer")
+																														iCount += 1
+
+																										# Triari -> Praetorians
+																										elif iUnitType == gc.getInfoTypeForString("UNIT_TRIARII"):
+																												iNewUnit = gc.getInfoTypeForString("UNIT_PRAETORIAN")
+																												screen.appendMultiListButton("BottomButtonContainer", gc.getUnitInfo(iNewUnit).getButton(), 0, WidgetTypes.WIDGET_GENERAL, 705, iNewUnit, False)
+																												screen.show("BottomButtonContainer")
+																												screen.enableMultiListPulse("BottomButtonContainer", True, 0, iCount)
+																												iCount += 1
+
+																						# Principes, Hastati, Pilumni -> Triarii
+																						if iUnitType == gc.getInfoTypeForString("UNIT_PRINCIPES") or iUnitType == gc.getInfoTypeForString("UNIT_HASTATI") or iUnitType == gc.getInfoTypeForString("UNIT_PILUMNI"):
+																								if pTeam.isHasTech(gc.getInfoTypeForString("TECH_EISENWAFFEN")):
+																										screen.appendMultiListButton("BottomButtonContainer", "Art/Interface/Buttons/Units/button_triarii2.dds", 0,
+																																								 WidgetTypes.WIDGET_GENERAL, 705, gc.getInfoTypeForString("UNIT_TRIARII"), False)
+																										screen.show("BottomButtonContainer")
+																										screen.enableMultiListPulse("BottomButtonContainer", True, 0, iCount)
+																										iCount += 1
+																						# Hasta Warrior -> Celeres
+																						elif iUnitType == gc.getInfoTypeForString("UNIT_HASTA"):
+																								# if pUnit.getCivilizationType() == gc.getInfoTypeForString("CIVILIZATION_ETRUSCANS"):
+																								screen.appendMultiListButton("BottomButtonContainer", "Art/Interface/Buttons/Units/button_celeres.dds", 0,
+																																						 WidgetTypes.WIDGET_GENERAL, 705, gc.getInfoTypeForString("UNIT_CELERES"), False)
+																								screen.show("BottomButtonContainer")
+																								screen.enableMultiListPulse("BottomButtonContainer", True, 0, iCount)
+																								iCount += 1
+
+																		# GREEKS
+																		elif iCivType in L.LGreeks:
+																				# Elite Reiter -> Hipparchos
+																				if pUnit.getUnitCombatType() == gc.getInfoTypeForString("UNITCOMBAT_MOUNTED"):
+																						if pUnit.isHasPromotion(gc.getInfoTypeForString("PROMOTION_COMBAT5")):
+																								screen.appendMultiListButton("BottomButtonContainer", "Art/Interface/Buttons/Units/button_unit_hippeus4.dds", 0,
+																																						 WidgetTypes.WIDGET_GENERAL, 705, gc.getInfoTypeForString("UNIT_GREEK_HIPPARCH"), False)
+																								screen.show("BottomButtonContainer")
+																								screen.enableMultiListPulse("BottomButtonContainer", True, 0, iCount)
+																								iCount += 1
+																				# Reflex -> Elite
+																				elif iUnitType == gc.getInfoTypeForString("UNIT_ARCHER_REFLEX_GREEK"):
+																						screen.appendMultiListButton("BottomButtonContainer", "Art/Interface/Buttons/Units/button_archer_greek.dds", 0,
+																																				 WidgetTypes.WIDGET_GENERAL, 705, gc.getInfoTypeForString("UNIT_ARCHER_REFLEX_GREEK2"), False)
+																						screen.show("BottomButtonContainer")
+																						screen.enableMultiListPulse("BottomButtonContainer", True, 0, iCount)
+																						iCount += 1
+
+																		# SPARTA
+																		elif iCivType == gc.getInfoTypeForString("CIVILIZATION_SPARTA"):
+																				if iUnitType == gc.getInfoTypeForString("UNIT_SPEARMAN") or iUnitType == gc.getInfoTypeForString("UNIT_SCHILDTRAEGER"):
+																						screen.appendMultiListButton("BottomButtonContainer", "Art/Interface/Buttons/Units/button_unit_spartan1.dds", 0,
+																																				 WidgetTypes.WIDGET_GENERAL, 705, gc.getInfoTypeForString("UNIT_SPARTA_1"), False)
+																						screen.show("BottomButtonContainer")
+																						screen.enableMultiListPulse("BottomButtonContainer", True, 0, iCount)
+																						iCount += 1
+
+																		# PERSIA
+																		elif iCivType == gc.getInfoTypeForString("CIVILIZATION_PERSIA"):
+																				# Garde
+																				if iUnitType == gc.getInfoTypeForString("UNIT_APFELTRAEGER"):
+																						screen.appendMultiListButton("BottomButtonContainer", "Art/Interface/Buttons/Units/button_unit_immortalguard.dds", 0,
+																																				 WidgetTypes.WIDGET_GENERAL, 705, gc.getInfoTypeForString("UNIT_UNSTERBLICH_2"), False)
+																						screen.show("BottomButtonContainer")
+																						screen.enableMultiListPulse("BottomButtonContainer", True, 0, iCount)
+																						iCount += 1
+
+																		# MACEDONIA
+																		elif iCivType == gc.getInfoTypeForString("CIVILIZATION_MACEDONIA"):
+
+																				# Berittene
+																				if pUnit.getUnitCombatType() == gc.getInfoTypeForString("UNITCOMBAT_MOUNTED"):
+																						# Prodomoi -> Hetairoi
+																						if iUnitType == gc.getInfoTypeForString("UNIT_HORSEMAN_MACEDON"):
+																								screen.appendMultiListButton("BottomButtonContainer", ",Art/Interface/Buttons/Units/Keshik.dds,Art/Interface/Buttons/Warlords_Atlas_1.dds,2,11",
+																																						 0, WidgetTypes.WIDGET_GENERAL, 705, gc.getInfoTypeForString("UNIT_COMPANION_CAVALRY"), False)
+																								screen.show("BottomButtonContainer")
+																								screen.enableMultiListPulse("BottomButtonContainer", True, 0, iCount)
+																								iCount += 1
+																						# Hetairoi -> Ilearchos
+																						elif iUnitType == gc.getInfoTypeForString("UNIT_COMPANION_CAVALRY"):
+																								screen.appendMultiListButton("BottomButtonContainer", "Art/Interface/Buttons/Units/button_unit_companion2.dds", 0,
+																																						 WidgetTypes.WIDGET_GENERAL, 705, gc.getInfoTypeForString("UNIT_HORSEMAN_MACEDON3"), False)
+																								screen.show("BottomButtonContainer")
+																								screen.enableMultiListPulse("BottomButtonContainer", True, 0, iCount)
+																								iCount += 1
+																						# Ilearchos -> Ile basilikoi
+																						elif iUnitType == gc.getInfoTypeForString("UNIT_HORSEMAN_MACEDON3"):
+																								screen.appendMultiListButton("BottomButtonContainer", "Art/Interface/Buttons/Units/button_unit_companion4.dds", 0,
+																																						 WidgetTypes.WIDGET_GENERAL, 705, gc.getInfoTypeForString("UNIT_HORSEMAN_MACEDON4"), False)
+																								screen.show("BottomButtonContainer")
+																								screen.enableMultiListPulse("BottomButtonContainer", True, 0, iCount)
+																								iCount += 1
+																						# Ile basilikoi -> Hipparchos
+																						elif iUnitType == gc.getInfoTypeForString("UNIT_HORSEMAN_MACEDON4"):
+																								screen.appendMultiListButton("BottomButtonContainer", "Art/Interface/Buttons/Units/button_unit_hippeus4.dds", 0,
+																																						 WidgetTypes.WIDGET_GENERAL, 705, gc.getInfoTypeForString("UNIT_GREEK_HIPPARCH"), False)
+																								screen.show("BottomButtonContainer")
+																								screen.enableMultiListPulse("BottomButtonContainer", True, 0, iCount)
+																								iCount += 1
+																				# Ende Berittene
+
+																				#  Lochagos (Pezhetairoi) -> Hetairoi
+																				# elif iUnitType == gc.getInfoTypeForString("UNIT_PEZHETAIROI3"):
+																				#  screen.appendMultiListButton("BottomButtonContainer", ",Art/Interface/Buttons/Units/Keshik.dds,Art/Interface/Buttons/Warlords_Atlas_1.dds,2,11", 0, WidgetTypes.WIDGET_GENERAL, 705, gc.getInfoTypeForString("UNIT_COMPANION_CAVALRY"), False)
+																				#  screen.show("BottomButtonContainer")
+																				#  screen.enableMultiListPulse("BottomButtonContainer", True, 0, iCount)
+																				#  iCount += 1
+																				#  Hypaspist -> Argyraspidai (Silberschild)
+																				elif iUnitType == gc.getInfoTypeForString("UNIT_HYPASPIST"):
+																						screen.appendMultiListButton("BottomButtonContainer", "Art/Interface/Buttons/Units/button_unit_hypa2.dds", 0,
+																																				 WidgetTypes.WIDGET_GENERAL, 705, gc.getInfoTypeForString("UNIT_HYPASPIST2"), False)
+																						screen.show("BottomButtonContainer")
+																						screen.enableMultiListPulse("BottomButtonContainer", True, 0, iCount)
+																						iCount += 1
+																				#  Argyraspidai -> Royal Hypaspist
+																				elif iUnitType == gc.getInfoTypeForString("UNIT_HYPASPIST2"):
+																						screen.appendMultiListButton("BottomButtonContainer", "Art/Interface/Buttons/Units/button_unit_hypa3.dds", 0,
+																																				 WidgetTypes.WIDGET_GENERAL, 705, gc.getInfoTypeForString("UNIT_HYPASPIST3"), False)
+																						screen.show("BottomButtonContainer")
+																						screen.enableMultiListPulse("BottomButtonContainer", True, 0, iCount)
+																						iCount += 1
+																				# Reflex -> Elite
+																				elif iUnitType == gc.getInfoTypeForString("UNIT_ARCHER_REFLEX_GREEK"):
+																						screen.appendMultiListButton("BottomButtonContainer", "Art/Interface/Buttons/Units/button_archer_greek.dds", 0,
+																																				 WidgetTypes.WIDGET_GENERAL, 705, gc.getInfoTypeForString("UNIT_ARCHER_REFLEX_GREEK2"), False)
+																						screen.show("BottomButtonContainer")
+																						screen.enableMultiListPulse("BottomButtonContainer", True, 0, iCount)
+																						iCount += 1
+
+																		# EGYPT
+																		elif iCivType == gc.getInfoTypeForString("CIVILIZATION_EGYPT") or iCivType == gc.getInfoTypeForString("CIVILIZATION_NUBIA"):
+																				if iUnitType not in L.LNoRankUnits:
+																						#  Pharaonengarde oder kuschitischer Fuerst
+																						# if gc.getCivilizationInfo(pUnitOwner.getCivilizationType()).getCivilizationUnits(gc.getInfoTypeForString("UNITCLASS_ELITE1")) < 3:
+																						if pTeam.isHasTech(gc.getInfoTypeForString("TECH_BEWAFFNUNG4")):
+																								screen.appendMultiListButton("BottomButtonContainer", "Art/Interface/Buttons/Units/button_unit_egypt_horus.dds", 0,
+																																						 WidgetTypes.WIDGET_GENERAL, 705, gc.getInfoTypeForString("UNIT_EGYPT_CHEPESCH"), False)
+																								screen.show("BottomButtonContainer")
+																								screen.enableMultiListPulse("BottomButtonContainer", True, 0, iCount)
+																								iCount += 1
+
+																		# Schildtraeger
+																		if iUnitType == gc.getInfoTypeForString("UNIT_SCHILDTRAEGER"):
+
+																				if pTeam.isHasTech(gc.getInfoTypeForString("TECH_KETTENPANZER")):
+
+																						if iCivType == gc.getInfoTypeForString("CIVILIZATION_DAKER"):
+																								screen.appendMultiListButton("BottomButtonContainer", "Art/Interface/Buttons/Units/button_unit_dacianchief.dds", 0,
+																																						 WidgetTypes.WIDGET_GENERAL, 705, gc.getInfoTypeForString("UNIT_FUERST_DAKER"), False)
+																								screen.show("BottomButtonContainer")
+																								screen.enableMultiListPulse("BottomButtonContainer", True, 0, iCount)
+																								iCount += 1
+																						elif iCivType == gc.getInfoTypeForString("CIVILIZATION_ISRAEL"):
+																								screen.appendMultiListButton("BottomButtonContainer", "Art/Interface/Buttons/Units/button_israel_maccaber.dds",
+																																						 0, WidgetTypes.WIDGET_GENERAL, 705, gc.getInfoTypeForString("UNIT_MACCABEE"), False)
+																								screen.show("BottomButtonContainer")
+																								screen.enableMultiListPulse("BottomButtonContainer", True, 0, iCount)
+																								iCount += 1
+
+																		# Axeman
+																		elif iUnitType == gc.getInfoTypeForString("UNIT_AXEMAN2"):
+																				if pTeam.isHasTech(gc.getInfoTypeForString("TECH_EISENWAFFEN")):
+																						if iCivType == gc.getInfoTypeForString("CIVILIZATION_GERMANEN"):
+																								screen.appendMultiListButton("BottomButtonContainer", "Art/Interface/Buttons/Units/button_axeman.dds", 0,
+																																						 WidgetTypes.WIDGET_GENERAL, 705, gc.getInfoTypeForString("UNIT_BERSERKER_GERMAN"), False)
+																								screen.show("BottomButtonContainer")
+																								screen.enableMultiListPulse("BottomButtonContainer", True, 0, iCount)
+																								iCount += 1
+
+																		# Spearman
+																		elif iUnitType == gc.getInfoTypeForString("UNIT_SPEARMAN"):
+
+																				if pTeam.isHasTech(gc.getInfoTypeForString("TECH_LINOTHORAX")):
+																						# India
+																						if iCivType == gc.getInfoTypeForString("CIVILIZATION_INDIA"):
+																								screen.appendMultiListButton("BottomButtonContainer", "Art/Interface/Buttons/Units/button_unit_inder_radscha.dds",
+																																						 0, WidgetTypes.WIDGET_GENERAL, 705, gc.getInfoTypeForString("UNIT_RADSCHA"), False)
+																								screen.show("BottomButtonContainer")
+																								screen.enableMultiListPulse("BottomButtonContainer", True, 0, iCount)
+																								iCount += 1
+																						# Greeks
+																						elif iCivType in L.LGreeks:
+																								# Spearman -> Hoplit
+																								screen.appendMultiListButton("BottomButtonContainer", "Art/Interface/Buttons/Units/button_unit_hoplit.dds", 0,
+																																						 WidgetTypes.WIDGET_GENERAL, 705, gc.getInfoTypeForString("UNIT_HOPLIT"), False)
+																								screen.show("BottomButtonContainer")
+																								screen.enableMultiListPulse("BottomButtonContainer", True, 0, iCount)
+																								iCount += 1
+																						# Karthago
+																						elif iCivType == gc.getInfoTypeForString("CIVILIZATION_CARTHAGE") or iCivType == gc.getInfoTypeForString("CIVILIZATION_PHON"):
+																								screen.appendMultiListButton("BottomButtonContainer", gc.getUnitInfo(gc.getInfoTypeForString("UNIT_CARTH_SACRED_BAND_HOPLIT")
+																																																										 ).getButton(), 0, WidgetTypes.WIDGET_GENERAL, 705, gc.getInfoTypeForString("UNIT_CARTH_SACRED_BAND_HOPLIT"), False)
+																								screen.show("BottomButtonContainer")
+																								screen.enableMultiListPulse("BottomButtonContainer", True, 0, iCount)
+																								iCount += 1
+
+																				# Harier
+																				if iCivType == gc.getInfoTypeForString("CIVILIZATION_GERMANEN"):
+																						if pTeam.isHasTech(gc.getInfoTypeForString("TECH_EISENWAFFEN")):
+																								screen.appendMultiListButton("BottomButtonContainer", "Art/Interface/Buttons/Units/button_unit_harii.dds", 0,
+																																						 WidgetTypes.WIDGET_GENERAL, 705, gc.getInfoTypeForString("UNIT_GERMAN_HARIER"), False)
+																								screen.show("BottomButtonContainer")
+																								screen.enableMultiListPulse("BottomButtonContainer", True, 0, iCount)
+																								iCount += 1
+
+																		# Swordsman
+																		elif iUnitType == gc.getInfoTypeForString("UNIT_SWORDSMAN"):
+																				if iCivType == gc.getInfoTypeForString("CIVILIZATION_INDIA"):
+																						screen.appendMultiListButton("BottomButtonContainer", "Art/Interface/Buttons/Units/button_unit_nayar.dds", 0,
+																																				 WidgetTypes.WIDGET_GENERAL, 705, gc.getInfoTypeForString("UNIT_INDIAN_NAYAR"), False)
+																						screen.show("BottomButtonContainer")
+																						screen.enableMultiListPulse("BottomButtonContainer", True, 0, iCount)
+																						iCount += 1
+
+																		# Steppenreiter -> Geissel Gottes
+																		elif iUnitType == gc.getInfoTypeForString("UNIT_MONGOL_KESHIK"):
+																				screen.appendMultiListButton("BottomButtonContainer", "Art/Interface/Buttons/Units/button_heavy_horseman.dds", 0,
+																																		 WidgetTypes.WIDGET_GENERAL, 705, gc.getInfoTypeForString("UNIT_HEAVY_HORSEMAN_HUN"), False)
+																				screen.show("BottomButtonContainer")
+																				screen.enableMultiListPulse("BottomButtonContainer", True, 0, iCount)
+																				iCount += 1
+																		
 																		# Allgemein Veteran -> Reservist
 																		if bCity:
 																				if pCity.getOwner() == pUnit.getOwner():
@@ -2302,6 +2658,7 @@ class CvMainInterface:
 																										"BottomButtonContainer", ",Art/Interface/MainScreen/CityScreen/Great_Engineer.dds,Art/Interface/Buttons/Warlords_Atlas_2.dds,7,6", 0, WidgetTypes.WIDGET_GENERAL, 724, 724, False)
 																								screen.show("BottomButtonContainer")
 																								iCount += 1
+																		
 
 																# if Veteran/Routiniert -> Elite / Reservist -----------------------
 
@@ -2312,7 +2669,7 @@ class CvMainInterface:
 
 																				iBuilding1 = gc.getInfoTypeForString("BUILDING_MILITARY_ACADEMY")
 																				iBuilding2 = gc.getInfoTypeForString("BUILDING_BARRACKS")
-																				if bCity and pUnitOwner.getGold() > 25 and pCity.getOwner() == pUnit.getOwner() and (pCity.isHasBuilding(iBuilding1) or pCity.isHasBuilding(iBuilding2)):
+																				if bCity and pUnitOwner.getGold() > 30 and pCity.getOwner() == pUnit.getOwner() and (pCity.isHasBuilding(iBuilding1) or pCity.isHasBuilding(iBuilding2)):
 																						screen.appendMultiListButton("BottomButtonContainer", "Art/Interface/Buttons/Actions/button_action_kastell.dds",
 																																				 0, WidgetTypes.WIDGET_GENERAL, 756, 0, True)
 																						screen.show("BottomButtonContainer")
@@ -2321,6 +2678,8 @@ class CvMainInterface:
 
 																# Ende if PROMOTION_COMBAT4
 
+
+																'''# Auskommentiert, wird weiter unten behandelt
 																# PAE RangPromoUp + Veteran + Elite Units
 																# statt iNewUnit = PAE_Unit.canUpgradeUnit(pUnit), wo nur eine Einheit geholt wird, können hier mehrere Upgrades angezeigt werden
 																# Gleicher CHECK ist in PAE_Unit.canUpgradeUnit()
@@ -2385,8 +2744,25 @@ class CvMainInterface:
 																														screen.enableMultiListPulse("BottomButtonContainer", True, 0, iCount)
 																												iCount += 1
 																# end LRankUnits
+																'''
 
 												# end if can move (Routiniert, Veteran, Elite) and Domain Land
+
+
+												# Unit Rang Promos - Ersatz für den Auskommentierten Teil oben
+												if pUnit.canMove() and CvUtil.getScriptData(pUnit, ["P", "t"]) == "RangPromoUp":
+														# Belobigung fuer die meisten Einheiten immer und ueberall erlauben
+														if pUnit.getUnitType() not in L.LCapitalPromoUpUnits:
+																bCapital = True
+														if pUnitOwner.getGold() < 50:
+																bCapital = False
+														#screen.appendMultiListButton("BottomButtonContainer", "Art/Interface/Buttons/Rang/button_rang_up.dds", 0, WidgetTypes.WIDGET_GENERAL, 751, pUnit.getOwner(), bCapital)
+														screen.appendMultiListButton("BottomButtonContainer", "Art/Interface/Buttons/Rang/button_rang_up.dds", 0, WidgetTypes.WIDGET_GENERAL, 751, pUnit.getID(), bCapital)
+														screen.show("BottomButtonContainer")
+														if bCapital:
+																screen.enableMultiListPulse("BottomButtonContainer", True, 0, iCount)
+														iCount += 1
+
 
 												# --------------------
 												# BEGIN Horse <-> Unit
@@ -2476,7 +2852,8 @@ class CvMainInterface:
 																								screen.show("BottomButtonContainer")
 																								iCount += 1
 																		
-																		if bCity and pPlot.getOwner() == iUnitOwner:
+																		#if bCity and pPlot.getOwner() == iUnitOwner:
+																		if bCity and iUnitType in L.LCultivationUnits:
 																				screen.appendMultiListButton("BottomButtonContainer", ArtFileMgr.getInterfaceArtInfo(
 																						"INTERFACE_TRADE_BUY").getPath(), 0, WidgetTypes.WIDGET_GENERAL, 739, 1, True)
 																				screen.show("BottomButtonContainer")
@@ -3592,7 +3969,8 @@ class CvMainInterface:
 												# Formationen / Formations End ------
 
 												# Legend units can become a Great General
-												if pUnit.isHasPromotion(gc.getInfoTypeForString("PROMOTION_COMBAT6")):
+												# PAE 6.15: last war weariness ranked units, because: combat promoting goes faster, too many Generals alive
+												if pUnit.isHasPromotion(gc.getInfoTypeForString("PROMOTION_MORAL_NEG5")):
 														#if pUnit.isHasPromotion(gc.getInfoTypeForString("PROMOTION_MORAL_NEG1")):
 														#if pUnit.getUnitCombatType() not in L.LArcherCombats:
 														if not pUnit.isHasPromotion(gc.getInfoTypeForString("PROMOTION_LEADER")):

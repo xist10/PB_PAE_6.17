@@ -11159,8 +11159,8 @@
 			<iFriendlyHealChange>0</iFriendlyHealChange>
 			<iSameTileHealChange>0</iSameTileHealChange>
 			<iAdjacentTileHealChange>0</iAdjacentTileHealChange>
-			<iCombatPercent>25</iCombatPercent>
-			<iCityAttack>-25</iCityAttack>
+			<iCombatPercent>20</iCombatPercent>
+			<iCityAttack>-20</iCityAttack>
 			<iCityDefense>0</iCityDefense>
 			<iHillsAttack>0</iHillsAttack>
 			<iHillsDefense>0</iHillsDefense>

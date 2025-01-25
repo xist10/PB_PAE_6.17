@@ -12,3 +12,8 @@ v25 Verschiedene Pythonkorrekturen - Umwandlung der Kreise bei Handelskarren
 v26 Einbau der Pythonänderungen von PAE_PB_7 - Zurück der Listen, 2 kleine Fehlerbehandlungen; Belobigung
 v28 Entfernen von Debugpythondateien
 v29 Lösen von Probleme im PB Betrieb
+v31 Lösen des CtD durch Prätorianer, Verbesserung Belobigungen
+v32 Entfernen des Handelbugs
+v34 Handelsbug (erneut), CtD durch -100% Stadtangriff (nur -50% für Reiter)
+v36 Hotfix für PAE_Trade
+v37 Bugfix sinkende Kulterträge
